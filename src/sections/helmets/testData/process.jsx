@@ -36,12 +36,16 @@ import {
   Alert,
   DialogContent,
   IconButton,
+  InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
   TextField,
 } from "@mui/material";
 import UserQuickEditForm from "./editForm";
 import { LoadingButton } from "@mui/lab";
+import { TimeField, TimePicker } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
 
 export const fetcher = async (...args) =>
   fetch(...args).then((res) => res.json());
@@ -50,7 +54,7 @@ const rows = [
     id: 1,
     location: "gt",
     date1: "نشط",
-    time1: "جبران حسن اليحيوي",
+    time1: "08:10",
     action: "86718q",
     status1: "In Service",
   },
@@ -58,7 +62,7 @@ const rows = [
     id: 2,
     location: "12",
     date1: "نشط",
-    time1: "جبران حسن اليحيوي",
+    time1: "22:10",
     action: "86718",
     status1: "Shutdown",
   },
@@ -66,15 +70,16 @@ const rows = [
     id: 3,
     location: "gg",
     date1: "نشط",
-    time1: "جبران حسن اليحيوي",
+    time1: "18:10",
     action: "86718",
     status1: "Stand By",
   },
 ];
+
 export default function DoProcess({ ids }) {
   const { data, error } = useSWR(`/api/api.php?dateQuery=${ids}`, fetcher);
   const [amount, setAmount] = useState(0);
-
+  const [personName, setPersonName] = useState("");
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const useAction = useCallback((id) => {
@@ -87,13 +92,29 @@ export default function DoProcess({ ids }) {
       bottom: params.isLastVisible ? 0 : 5,
     };
   }, []);
+  const locations = [
+    {
+      id: "1",
+      location: "GT21",
+    },
+    {
+      id: "2",
+      location: "GT27",
+    },
+    {
+      id: "3",
+      location: "GT30",
+    },
+  ];
+  const handleChange = (event) => {
+    setPersonName(event.target.value);
+  };
   if (error) {
     return <p> {error.message}</p>;
   }
   if (!data) {
     return <p>Loodings</p>;
   }
-
   const settings = useSettingsContext();
   const columns = [
     {
@@ -282,16 +303,17 @@ export default function DoProcess({ ids }) {
         open={confirm.value}
         onClose={confirm.onFalse}
       />
-      <UserQuickEditForm
+      {/* <UserQuickEditForm
         currentUser={amount}
         open={quickEdit.value}
         onClose={quickEdit.onFalse}
-      />
+      /> */}
     </>
   );
+
   function ConfirmEditDialog({ open, amount, onClose }) {
     // const viewTemplate = rows.map((task) => {
-      const viewTemplate = data.map((task) => {
+    const viewTemplate = data.map((task) => {
       if (amount === task.id) {
         return (
           <Dialog
@@ -304,13 +326,12 @@ export default function DoProcess({ ids }) {
             }}
           >
             <DialogTitle>تحديث</DialogTitle>
-    
+
             <DialogContent>
-              
               <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
                 Account is waiting for confirmation
               </Alert>
-    
+
               <Box
                 rowGap={3}
                 columnGap={2}
@@ -320,16 +341,30 @@ export default function DoProcess({ ids }) {
                   sm: "repeat(2, 1fr)",
                 }}
               >
-                <Select name="status" label="Status">
-                  <MenuItem></MenuItem>
+                {/* <Select name="status" label="Status">
+                  <MenuItem value={task.location}></MenuItem>
+                </Select> */}
+                <Select
+                  labelId="demo-simple-select-helper-label"
+                  id="demo-simple-select-helper"
+                  label="Age"
+                  onChange={handleChange}
+                  defaultValue={task.location}
+                >
+                  {locations.map((n) => (
+                   <MenuItem value={n.location}>{n.location}</MenuItem>
+                  ))}
                 </Select>
-    
                 <Box sx={{ display: { xs: "none", sm: "block" } }} />
-    
-                <TextField name="name" label="Full Name" defaultValue={task.location}/>
-                <TextField name="email" label="Email Address" />
+
+                <TextField
+                  name="name"
+                  label="Full Name"
+                  defaultValue={task.time1}
+                />
+                <TextField name="email" label="Email Address" type="time" defaultValue={task.time1} format="HH:mm"  ampm={false}/>
                 <TextField name="phoneNumber" label="Phone Number" />
-    
+
                 <TextField name="state" label="State/Region" />
                 <TextField name="city" label="City" />
                 <TextField name="address" label="Address" />
@@ -338,21 +373,21 @@ export default function DoProcess({ ids }) {
                 <TextField name="role" label="Role" />
               </Box>
             </DialogContent>
-    
+
             <DialogActions>
               <Button variant="outlined" onClick={onClose}>
                 Cancel
               </Button>
-    
+
               <LoadingButton type="submit" variant="contained">
                 Update
               </LoadingButton>
             </DialogActions>
           </Dialog>
         );
-      }})
-      return <>{viewTemplate}</>
-   
+      }
+    });
+    return <>{viewTemplate}</>;
   }
   // ----------------------------------------------------------------------
 
@@ -405,7 +440,7 @@ export default function DoProcess({ ids }) {
   //       );
   //     }
   //   });
-    // return <li className="todo">{viewTemplate}</li>;
+  // return <li className="todo">{viewTemplate}</li>;
   // }
 }
 
