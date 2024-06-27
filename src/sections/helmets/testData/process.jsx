@@ -45,7 +45,7 @@ import {
 } from "@mui/material";
 
 import { LoadingButton } from "@mui/lab";
-import { TimeField, TimePicker } from "@mui/x-date-pickers";
+import { DateCalendar, DateField, DatePicker, TimeField, TimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { NumberFormatBase, usePatternFormat } from "react-number-format";
 
@@ -59,7 +59,7 @@ const rows = [
     time1: "08:10",
     action: "GT START AS PER ASIR AND FAIL TO START",
     status1: "In Service",
-    name1: "جبران حسن اليحيوي"
+    name1: "جبران حسن اليحيوي",
   },
   {
     id: 2,
@@ -68,7 +68,7 @@ const rows = [
     time1: "22:22",
     action: "GT START AS PER ASIR",
     status1: "In Service",
-    name1: "جبران حسن اليحيوي"
+    name1: "جبران حسن اليحيوي",
   },
   {
     id: 3,
@@ -77,7 +77,7 @@ const rows = [
     time1: "04:15",
     action: "GT TRIP ON LOSS OF FLAME",
     status1: "Shutdown",
-    name1: "جبران حسن اليحيوي"
+    name1: "جبران حسن اليحيوي",
   },
   {
     id: 4,
@@ -86,7 +86,7 @@ const rows = [
     time1: "18:15",
     action: "gt trip on loss of flame",
     status1: "Stand By",
-    name1: "جبران حسن اليحيوي"
+    name1: "جبران حسن اليحيوي",
   },
 ];
 
@@ -326,7 +326,7 @@ export default function DoProcess({ ids }) {
             bgcolor: (theme) =>
               theme.palette.mode === "light" ? grey[200] : grey[900],
           },
-          textTransform:'Uppercase'
+          textTransform: "Uppercase",
         }}
       />
     </Card>
@@ -367,7 +367,8 @@ export default function DoProcess({ ids }) {
 
             <DialogContent>
               <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
-               تحديث عملية فنية على رقم المرجع {task.id} بواسطة <h4 >{task.name1} </h4>
+                تحديث عملية فنية على رقم المرجع {task.id} بواسطة{" "}
+                <h4>{task.name1} </h4>
               </Alert>
 
               <Box
@@ -380,21 +381,20 @@ export default function DoProcess({ ids }) {
                 }}
               >
                 <FormControl fullWidth>
-                <InputLabel id="location">الموقع</InputLabel>
-                <Select
-                  labelId="location"
-                  id="location"
-                  label="الموقع"
-                  // onChange={handleChange}
-                  defaultValue={task.location}
-                  
-                >
-                  {locations.map((n) => (
-                    <MenuItem key={n.id} value={n.location}>
-                      {n.location}
-                    </MenuItem>
-                  ))}
-                </Select>
+                  <InputLabel id="location">الموقع</InputLabel>
+                  <Select
+                    labelId="location"
+                    id="location"
+                    label="الموقع"
+                    // onChange={handleChange}
+                    defaultValue={task.location}
+                  >
+                    {locations.map((n) => (
+                      <MenuItem key={n.id} value={n.location}>
+                        {n.location}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </FormControl>
                 <Box sx={{ display: { xs: "none", sm: "block" } }} />
 
@@ -403,12 +403,36 @@ export default function DoProcess({ ids }) {
                   label="التاريخ"
                   type="date"
                   defaultValue={task.date1}
-                  inputProps={{style: {fontFamily: 'sans-serif', fontWeight:'bold',textTransform:'Uppercase'}}}
+                  slotProps={{ textField: { size: "small" } }}
+                  sx={{
+                    "& .MuiInputBase-input": {
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      fontFamily: "sans-serif",
+                    },
+                  }}
+                />
+                <DatePicker
+                  label="التاريخ"
+                  variant="subtitle"
+                  slotProps={{ textField: { size: "small" } }}
+                  sx={{
+                    "& .MuiInputBase-input": {
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                    },
+                  }}
                 />
                 <TextField
                   name="action"
                   label="الوصف"
-                  inputProps={{style: {fontFamily: 'sans-serif', fontWeight:'bold',textTransform:'Uppercase'}}}
+                  inputProps={{
+                    style: {
+                      fontFamily: "sans-serif",
+                      fontWeight: "bold",
+                      textTransform: "Uppercase",
+                    },
+                  }}
                   defaultValue={task.action}
                 />
 
@@ -417,22 +441,26 @@ export default function DoProcess({ ids }) {
                   mask="_"
                   customInput={TextField}
                   value={task.time1}
-                  inputProps={{style: {fontFamily: 'sans-serif', fontWeight:'bold',textTransform:'Uppercase'}}}
+                  inputProps={{
+                    style: {
+                      fontFamily: "sans-serif",
+                      fontWeight: "bold",
+                      textTransform: "Uppercase",
+                    },
+                  }}
                 />
                 <FormControl fullWidth>
                   <InputLabel id="status1">الحالة</InputLabel>
                   <Select
                     name="status1"
-                 
                     labelId="status1"
                     id="demo-simple-select"
                     label="الحالة"
                     // onChange={handleChange}
                     defaultValue={task.status1}
-                   
                   >
                     {status1.map((n) => (
-                      <MenuItem key={n.id} value={n.status}  >
+                      <MenuItem key={n.id} value={n.status}>
                         {n.status}
                       </MenuItem>
                     ))}
