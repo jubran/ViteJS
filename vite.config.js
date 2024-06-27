@@ -13,7 +13,8 @@ export default defineConfig( {
         lintCommand: 'eslint "./src/**/*.{js,jsx,ts,tsx}"',
       },
       overlay: {
-        initialIsOpen: false,
+        initialIsOpen: false, // eslint show in server side true , not show false
+        inheritAttrs: false
       },
     } ),
   ],

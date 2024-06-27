@@ -14,7 +14,7 @@ import {
   GridToolbarContainer,
   gridClasses,
 } from "@mui/x-data-grid";
-import { useCallback, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 import Iconify from "src/components/iconify";
 import { useSettingsContext } from "src/components/settings";
@@ -35,6 +35,7 @@ import { grey } from "@mui/material/colors";
 import {
   Alert,
   DialogContent,
+  FormControl,
   IconButton,
   InputLabel,
   MenuItem,
@@ -42,42 +43,55 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import UserQuickEditForm from "./editForm";
+
 import { LoadingButton } from "@mui/lab";
 import { TimeField, TimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import { NumberFormatBase, usePatternFormat } from "react-number-format";
 
 export const fetcher = async (...args) =>
   fetch(...args).then((res) => res.json());
 const rows = [
   {
     id: 1,
-    location: "gt",
-    date1: "نشط",
+    location: "GT21",
+    date1: "2024-06-01",
     time1: "08:10",
-    action: "86718q",
+    action: "GT START AS PER ASIR AND FAIL TO START",
     status1: "In Service",
+    name1: "جبران حسن اليحيوي"
   },
   {
     id: 2,
-    location: "12",
-    date1: "نشط",
-    time1: "22:10",
-    action: "86718",
-    status1: "Shutdown",
+    location: "GT27",
+    date1: "2024-10-01",
+    time1: "22:22",
+    action: "GT START AS PER ASIR",
+    status1: "In Service",
+    name1: "جبران حسن اليحيوي"
   },
   {
     id: 3,
-    location: "gg",
-    date1: "نشط",
-    time1: "18:10",
-    action: "86718",
+    location: "GT20",
+    date1: "2024-06-02",
+    time1: "04:15",
+    action: "GT TRIP ON LOSS OF FLAME",
+    status1: "Shutdown",
+    name1: "جبران حسن اليحيوي"
+  },
+  {
+    id: 4,
+    location: "GT30",
+    date1: "2024-06-02",
+    time1: "18:15",
+    action: "gt trip on loss of flame",
     status1: "Stand By",
+    name1: "جبران حسن اليحيوي"
   },
 ];
 
 export default function DoProcess({ ids }) {
-  const { data, error } = useSWR(`/api/api.php?dateQuery=${ids}`, fetcher);
+  // const { data, error } = useSWR(`/api/api.php?dateQuery=${ids}`, fetcher);
   const [amount, setAmount] = useState(0);
   const [personName, setPersonName] = useState("");
   const confirm = useBoolean();
@@ -105,16 +119,34 @@ export default function DoProcess({ ids }) {
       id: "3",
       location: "GT30",
     },
+    {
+      id: "4",
+      location: "GT20",
+    },
+  ];
+  const status1 = [
+    {
+      id: "1",
+      status: "In Service",
+    },
+    {
+      id: "2",
+      status: "Stand By",
+    },
+    {
+      id: "3",
+      status: "Shutdown",
+    },
   ];
   const handleChange = (event) => {
     setPersonName(event.target.value);
   };
-  if (error) {
-    return <p> {error.message}</p>;
-  }
-  if (!data) {
-    return <p>Loodings</p>;
-  }
+  // if (error) {
+  //   return <p> {error.message}</p>;
+  // }
+  // if (!data) {
+  //   return <p>Loodings</p>;
+  // }
   const settings = useSettingsContext();
   const columns = [
     {
@@ -229,8 +261,8 @@ export default function DoProcess({ ids }) {
         autoHeight={true}
         checkboxSelection
         disableRowSelectionOnClick
-        rows={data}
-        // rows={rows}
+        // rows={data}
+        rows={rows}
         columns={columns}
         // loading={data}
         getRowSpacing={getRowSpacing}
@@ -270,7 +302,10 @@ export default function DoProcess({ ids }) {
           ),
         }}
         sx={{
-          "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+          "&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within": {
+            outline: "none !important",
+          },
+          "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within ": {
             outline: "none !important",
           },
           "& .dcs-data-theme-cell": {
@@ -291,6 +326,7 @@ export default function DoProcess({ ids }) {
             bgcolor: (theme) =>
               theme.palette.mode === "light" ? grey[200] : grey[900],
           },
+          textTransform:'Uppercase'
         }}
       />
     </Card>
@@ -312,11 +348,13 @@ export default function DoProcess({ ids }) {
   );
 
   function ConfirmEditDialog({ open, amount, onClose }) {
-    // const viewTemplate = rows.map((task) => {
-    const viewTemplate = data.map((task) => {
+    const viewTemplate = rows.map((task) => {
+      // const viewTemplate = data.map((task) => {
       if (amount === task.id) {
         return (
           <Dialog
+            key={task.id}
+            disablePortal
             fullWidth
             maxWidth={false}
             open={open}
@@ -325,11 +363,11 @@ export default function DoProcess({ ids }) {
               sx: { maxWidth: 720 },
             }}
           >
-            <DialogTitle>تحديث</DialogTitle>
+            <DialogTitle></DialogTitle>
 
             <DialogContent>
               <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
-                Account is waiting for confirmation
+               تحديث عملية فنية على رقم المرجع {task.id} بواسطة <h4 >{task.name1} </h4>
               </Alert>
 
               <Box
@@ -341,53 +379,128 @@ export default function DoProcess({ ids }) {
                   sm: "repeat(2, 1fr)",
                 }}
               >
-                {/* <Select name="status" label="Status">
-                  <MenuItem value={task.location}></MenuItem>
-                </Select> */}
+                <FormControl fullWidth>
+                <InputLabel id="location">الموقع</InputLabel>
                 <Select
-                  labelId="demo-simple-select-helper-label"
-                  id="demo-simple-select-helper"
-                  label="Age"
-                  onChange={handleChange}
+                  labelId="location"
+                  id="location"
+                  label="الموقع"
+                  // onChange={handleChange}
                   defaultValue={task.location}
+                  
                 >
                   {locations.map((n) => (
-                   <MenuItem value={n.location}>{n.location}</MenuItem>
+                    <MenuItem key={n.id} value={n.location}>
+                      {n.location}
+                    </MenuItem>
                   ))}
                 </Select>
+                </FormControl>
                 <Box sx={{ display: { xs: "none", sm: "block" } }} />
 
                 <TextField
-                  name="name"
-                  label="Full Name"
-                  defaultValue={task.time1}
+                  name="date1"
+                  label="التاريخ"
+                  type="date"
+                  defaultValue={task.date1}
+                  inputProps={{style: {fontFamily: 'sans-serif', fontWeight:'bold',textTransform:'Uppercase'}}}
                 />
-                <TextField name="email" label="Email Address" type="time" defaultValue={task.time1} format="HH:mm"  ampm={false}/>
-                <TextField name="phoneNumber" label="Phone Number" />
+                <TextField
+                  name="action"
+                  label="الوصف"
+                  inputProps={{style: {fontFamily: 'sans-serif', fontWeight:'bold',textTransform:'Uppercase'}}}
+                  defaultValue={task.action}
+                />
 
-                <TextField name="state" label="State/Region" />
-                <TextField name="city" label="City" />
+                <CardExpiry
+                  label="الوقت"
+                  mask="_"
+                  customInput={TextField}
+                  value={task.time1}
+                  inputProps={{style: {fontFamily: 'sans-serif', fontWeight:'bold',textTransform:'Uppercase'}}}
+                />
+                <FormControl fullWidth>
+                  <InputLabel id="status1">الحالة</InputLabel>
+                  <Select
+                    name="status1"
+                 
+                    labelId="status1"
+                    id="demo-simple-select"
+                    label="الحالة"
+                    // onChange={handleChange}
+                    defaultValue={task.status1}
+                   
+                  >
+                    {status1.map((n) => (
+                      <MenuItem key={n.id} value={n.status}  >
+                        {n.status}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                {/* <TextField name="city" label="City" />
                 <TextField name="address" label="Address" />
                 <TextField name="zipCode" label="Zip/Code" />
                 <TextField name="company" label="Company" />
-                <TextField name="role" label="Role" />
+                <TextField name="role" label="Role" /> */}
               </Box>
             </DialogContent>
 
             <DialogActions>
               <Button variant="outlined" onClick={onClose}>
-                Cancel
+                الغاء
               </Button>
 
-              <LoadingButton type="submit" variant="contained">
-                Update
+              <LoadingButton
+                type="submit"
+                variant="outlined"
+                color="error"
+                endIcon={<Iconify icon="solar:pen-bold" />}
+              >
+                تحديث
               </LoadingButton>
             </DialogActions>
           </Dialog>
         );
       }
     });
-    return <>{viewTemplate}</>;
+    return <Fragment>{viewTemplate}</Fragment>;
+  }
+  function CardExpiry(props) {
+    /**
+     * usePatternFormat, returns all the props required for NumberFormatBase
+     * which we can extend in between
+     */
+    const { format, ...rest } = usePatternFormat({ ...props, format: "##:##" });
+
+    const _format = (val) => {
+      let hours = val.substring(0, 2);
+      const minutes = val.substring(2, 4);
+
+      // if (hours.length === 1 && hours[0] > 2) {
+      //   hours = `0${hours[0]}`;
+      // } else if (hours.length === 2) {
+      //   // set the lower and upper boundary
+      //   if (Number(hours) === 0) {
+      //     hours = `00`;
+      //   } else if (Number(hours) > 23) {
+      //     hours = "00";
+      //   }
+      if (hours.length === 1 && hours[0] > 2) {
+        hours = `0${hours[0]}`;
+      } else if (hours.length === 2) {
+        // set the lower and upper boundary
+        if (Number(hours) === 0) {
+          hours = `00`;
+        } else if (Number(hours) > 23) {
+          hours = "00";
+        }
+      }
+
+      return format(`${hours}${minutes}`);
+    };
+
+    return <NumberFormatBase format={_format} {...rest} />;
   }
   // ----------------------------------------------------------------------
 
