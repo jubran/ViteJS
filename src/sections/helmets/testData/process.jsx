@@ -23,7 +23,7 @@ import { paths } from "src/routes/paths";
 import ProductTableFiltersResult from "src/sections/product/product-table-filters-result";
 import useSWR from "swr";
 import { date } from "yup";
-import { Box, style } from "@mui/system";
+import { Box, fontWeight, style } from "@mui/system";
 import EmptyContent from "src/components/empty-content";
 import {
   RenderCellCreatedAt,
@@ -34,20 +34,41 @@ import {
 import { grey } from "@mui/material/colors";
 import {
   Alert,
+  Autocomplete,
   DialogContent,
   FormControl,
   IconButton,
+  InputAdornment,
   InputLabel,
   MenuItem,
   OutlinedInput,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 
 import { LoadingButton } from "@mui/lab";
-import { DateCalendar, DateField, DatePicker, TimeField, TimePicker } from "@mui/x-date-pickers";
+import {
+  DateCalendar,
+  DateField,
+  DatePicker,
+  LocalizationProvider,
+  TimeField,
+  TimePicker,
+} from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { NumberFormatBase, usePatternFormat } from "react-number-format";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import label from "src/components/label";
+import {
+  Form,
+  FormProvider,
+  useFieldArray,
+  useForm,
+  useFormContext,
+  Controller,
+} from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 export const fetcher = async (...args) =>
   fetch(...args).then((res) => res.json());
@@ -60,6 +81,10 @@ const rows = [
     action: "GT START AS PER ASIR AND FAIL TO START",
     status1: "In Service",
     name1: "جبران حسن اليحيوي",
+    flame: "390",
+    fsnl: "10:01",
+    synch: "10:10",
+    note: "",
   },
   {
     id: 2,
@@ -69,6 +94,10 @@ const rows = [
     action: "GT START AS PER ASIR",
     status1: "In Service",
     name1: "جبران حسن اليحيوي",
+    flame: "388",
+    fsnl: "22:11",
+    synch: "22:20",
+    note: "",
   },
   {
     id: 3,
@@ -78,6 +107,7 @@ const rows = [
     action: "GT TRIP ON LOSS OF FLAME",
     status1: "Shutdown",
     name1: "جبران حسن اليحيوي",
+    note: "#2231234876",
   },
   {
     id: 4,
@@ -87,19 +117,47 @@ const rows = [
     action: "gt trip on loss of flame",
     status1: "Stand By",
     name1: "جبران حسن اليحيوي",
+    note: "",
+  },
+  {
+    id: 5,
+    location: "SKID#1 SP#1",
+    date1: "2024-01-02",
+    time1: "18:15",
+    action: "START",
+    status1: "In Service",
+    name1: "جبران حسن اليحيوي",
+    note: "",
   },
 ];
-
 export default function DoProcess({ ids }) {
   // const { data, error } = useSWR(`/api/api.php?dateQuery=${ids}`, fetcher);
   const [amount, setAmount] = useState(0);
+  const [dateValue, setValue] = useState(dayjs(Date.now()));
   const [personName, setPersonName] = useState("");
   const confirm = useBoolean();
   const quickEdit = useBoolean();
+  // const { control, formValues: { errors } } = useForm();
+  // const { register, setFormValue } = useForm({ defaultValues: { test: "" } });
+  // const { handleSubmit, control } = useForm();
+  // const onSubmit =(data) => callback(prepareData(data))
+  // const methods = useForm()
+
+  // const onSubmit = (data) => console.log(data)
+  // const { handleSubmit, control } = useForm()
+  const methods = useForm({
+  
+  });
+  const {
+    register,
+    getValues
+  } = useForm()
+
   const useAction = useCallback((id) => {
     setAmount(id);
     confirm.onTrue(true);
   });
+
   const getRowSpacing = useCallback((params) => {
     return {
       top: params.isFirstVisible ? 0 : 5,
@@ -122,6 +180,10 @@ export default function DoProcess({ ids }) {
     {
       id: "4",
       location: "GT20",
+    },
+    {
+      id: "5",
+      location: "SKID#1 SP#1",
     },
   ];
   const status1 = [
@@ -363,161 +425,239 @@ export default function DoProcess({ ids }) {
               sx: { maxWidth: 720 },
             }}
           >
-            <DialogTitle></DialogTitle>
+            {/* <FormProvider {...methods}> */}
+            <Form  control={register}  >
+              <DialogTitle></DialogTitle>
 
-            <DialogContent>
-              <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
-                تحديث عملية فنية على رقم المرجع {task.id} بواسطة{" "}
-                <h4>{task.name1} </h4>
-              </Alert>
-
-              <Box
-                rowGap={3}
-                columnGap={2}
-                display="grid"
-                gridTemplateColumns={{
-                  xs: "repeat(1, 1fr)",
-                  sm: "repeat(2, 1fr)",
-                }}
-              >
-                <FormControl fullWidth>
-                  <InputLabel id="location">الموقع</InputLabel>
-                  <Select
-                    labelId="location"
-                    id="location"
-                    label="الموقع"
-                    // onChange={handleChange}
-                    defaultValue={task.location}
-                  >
-                    {locations.map((n) => (
-                      <MenuItem key={n.id} value={n.location}>
-                        {n.location}
-                      </MenuItem>
-                    ))}
-                  </Select>
+              <DialogContent>
+              <FormControl>
+             
                 </FormControl>
-                <Box sx={{ display: { xs: "none", sm: "block" } }} />
-
-                <TextField
-                  name="date1"
-                  label="التاريخ"
-                  type="date"
-                  defaultValue={task.date1}
-                  slotProps={{ textField: { size: "small" } }}
-                  sx={{
-                    "& .MuiInputBase-input": {
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                      fontFamily: "sans-serif",
-                    },
-                  }}
-                />
-                <DatePicker
-                  label="التاريخ"
-                  variant="subtitle"
-                  slotProps={{ textField: { size: "small" } }}
-                  sx={{
-                    "& .MuiInputBase-input": {
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                    },
-                  }}
-                />
-                <TextField
-                  name="action"
-                  label="الوصف"
-                  inputProps={{
-                    style: {
-                      fontFamily: "sans-serif",
-                      fontWeight: "bold",
-                      textTransform: "Uppercase",
-                    },
-                  }}
-                  defaultValue={task.action}
-                />
-
-                <CardExpiry
-                  label="الوقت"
-                  mask="_"
-                  customInput={TextField}
-                  value={task.time1}
-                  inputProps={{
-                    style: {
-                      fontFamily: "sans-serif",
-                      fontWeight: "bold",
-                      textTransform: "Uppercase",
-                    },
-                  }}
-                />
-                <FormControl fullWidth>
-                  <InputLabel id="status1">الحالة</InputLabel>
-                  <Select
-                    name="status1"
-                    labelId="status1"
-                    id="demo-simple-select"
-                    label="الحالة"
-                    // onChange={handleChange}
-                    defaultValue={task.status1}
+                <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
+                  تحديث عملية فنية على رقم المرجع {task.id} بواسطة{" "}
+                  <h4>{task.name1} </h4>
+                </Alert>
+                <Box display="grid" rowGap={3}>
+                  <Box
+                    rowGap={3}
+                    columnGap={2}
+                    display="grid"
+                    gridTemplateColumns={{
+                      xs: "repeat(1, 1fr)",
+                      sm: "repeat(2, 1fr)",
+                    }}
                   >
-                    {status1.map((n) => (
-                      <MenuItem key={n.id} value={n.status}>
-                        {n.status}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                {/* <TextField name="city" label="City" />
-                <TextField name="address" label="Address" />
-                <TextField name="zipCode" label="Zip/Code" />
-                <TextField name="company" label="Company" />
-                <TextField name="role" label="Role" /> */}
-              </Box>
-            </DialogContent>
+                 <FormControl>
+                      <Autocomplete
+                        defaultValue={task.location}
+                        options={locations.map((option) => option.location)}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            name="location"
+                            label="الموقع"
+                            inputProps={{
+                              style: { fontWeight: "bolder" },
+                              ...params.inputProps,
+                            
+                            }}
+                         
+                          />
+                        )}
+                      />
+                  </FormControl>
+                    <FormControl fullWidth>
+                      <InputLabel id="status1">الحالة</InputLabel>
+                      <Select
+                        name="status1"
+                        labelId="status1"
+                        id="demo-simple-select"
+                        label="الحالة"
+                        sx={{
+                          "& .MuiSelect-select": {
+                            fontWeight: "bold",
+                          },
+                        }}
+                        // onChange={handleChange}
+                        defaultValue={task.status1}
+                      
+                      >
+                        {status1.map((n) => (
+                          <MenuItem
+                            key={n.id}
+                            value={n.status}
+                            style={{ fontWeight: "bold" }}
+                          >
+                            {n.status}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    {/* <Box sx={{ display: { xs: "none", sm: "block" } }} /> */}
+                    <FormControl>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          name="date1"
+                          label="التاريخ"
+                          value={dayjs(task.date1)}
+                         
+                          format="YYYY-MM-DD"
+                          onChange={(newValue) =>
+                            setDate(newValue.format("YYYY-MM-DD"))
+                          }
+                          variant="subtitle"
+                          // slotProps={{ textField: { size: "small" } }}
+                          sx={{
+                            "& .MuiInputBase-input": {
+                              fontWeight: "bold",
+                            },
+                          }}
+                         
+                        />
+                      </LocalizationProvider>
+                      </FormControl>
+                    <TimeFormatFour
+                      label="الوقت"
+                      mask="_"
+                      name="time1"
+                      customInput={TextField}
+                      value={task.time1}
+                      inputProps={{
+                        style: {
+                          fontFamily: "sans-serif",
+                          fontWeight: "bold",
+                          textTransform: "Uppercase",
+                        },
+                      }}
+                    />
+                  </Box>
+                  {task.synch ? (
+                    <Box
+                      columnGap={3}
+                      display="grid"
+                      gridTemplateColumns={{
+                        xs: "repeat(1, 1fr)",
+                        sm: "repeat(3, 1fr)",
+                      }}
+                    >
+                       <FormControl>
+                      <TextField
+                        name="flame"
+                        defaultValue={task.flame}
+                        label="الإحتراق"
+                        inputProps={{
+                          style: {
+                            fontFamily: "sans-serif",
+                            fontWeight: "bold",
+                            textTransform: "Uppercase",
+                          },
+                        }}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              RPM
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                       </FormControl>
+                      <TimeFormatFour
+                        label="FSNL"
+                        mask="_"
+                        customInput={TextField}
+                        value={task.fsnl}
+                        inputProps={{
+                          style: {
+                            fontFamily: "sans-serif",
+                            fontWeight: "bold",
+                            textTransform: "Uppercase",
+                          },
+                        }}
+                      />
+                      <TimeFormatFour
+                        label="SYNCH"
+                        name="synch"
+                        mask="_"
+                        customInput={TextField}
+                        value={task.synch}
+                        inputProps={{
+                          style: {
+                            fontFamily: "sans-serif",
+                            fontWeight: "bold",
+                            textTransform: "Uppercase",
+                          },
+                        }}
+                      />
+                    </Box>
+                  ) : null}
 
-            <DialogActions>
-              <Button variant="outlined" onClick={onClose}>
-                الغاء
-              </Button>
+                  <Box display="grid">
+                    <TextField
+                      dir="ltr"
+                      multiline
+                      rows={2}
+                      fullwidth
+                  
+                      defaultValue={task.action}
+                      name="action"
+                      label="الحدث"
+                      inputProps={{
+                        style: {
+                          fontFamily: "sans-serif",
+                          fontWeight: "bold",
+                          textTransform: "Uppercase",
+                        },
+                      }}
+                    />
+                  </Box>
+                  <Box display="grid">
+                    <TextField
+                      dir="ltr"
+                      name="notes"
+                      defaultValue={task.note}
+                      label={task.note.length > 0 ? "ملاحظات" : "لاتوجد ملاحظة"}
+                      inputProps={{
+                        style: {
+                          fontFamily: "sans-serif",
+                          fontWeight: "bold",
+                          textTransform: "Uppercase",
+                        },
+                      }}
+                    />
+                  </Box>
+                </Box>
+              </DialogContent>
 
-              <LoadingButton
-                type="submit"
-                variant="outlined"
-                color="error"
-                endIcon={<Iconify icon="solar:pen-bold" />}
-              >
-                تحديث
-              </LoadingButton>
-            </DialogActions>
+              <DialogActions>
+                <Button variant="outlined" onClick={onClose}>
+                  الغاء
+                </Button>
+
+                <LoadingButton
+                  type="submit"
+                  variant="outlined"
+                  color="error"
+                  endIcon={<Iconify icon="solar:pen-bold" />}
+                >
+                  تحديث
+                </LoadingButton>
+              </DialogActions>
+            </Form>
+            {/* </FormProvider> */}
           </Dialog>
         );
       }
     });
     return <Fragment>{viewTemplate}</Fragment>;
   }
-  function CardExpiry(props) {
-    /**
-     * usePatternFormat, returns all the props required for NumberFormatBase
-     * which we can extend in between
-     */
+  function TimeFormatFour(props) {
     const { format, ...rest } = usePatternFormat({ ...props, format: "##:##" });
-
     const _format = (val) => {
       let hours = val.substring(0, 2);
       const minutes = val.substring(2, 4);
-
-      // if (hours.length === 1 && hours[0] > 2) {
-      //   hours = `0${hours[0]}`;
-      // } else if (hours.length === 2) {
-      //   // set the lower and upper boundary
-      //   if (Number(hours) === 0) {
-      //     hours = `00`;
-      //   } else if (Number(hours) > 23) {
-      //     hours = "00";
-      //   }
       if (hours.length === 1 && hours[0] > 2) {
         hours = `0${hours[0]}`;
       } else if (hours.length === 2) {
-        // set the lower and upper boundary
         if (Number(hours) === 0) {
           hours = `00`;
         } else if (Number(hours) > 23) {
@@ -530,6 +670,7 @@ export default function DoProcess({ ids }) {
 
     return <NumberFormatBase format={_format} {...rest} />;
   }
+
   // ----------------------------------------------------------------------
 
   // function ConfirmEditDialog({ open, amount, data, contactInfo, onClose }) {
@@ -586,3 +727,8 @@ export default function DoProcess({ ids }) {
 }
 
 // ----------------------------------------------------------------------
+function NestedInput({value}) {
+  const { register } = useFormContext(); // retrieve all hook methods
+
+  return <TextField value={value.location} {...register("test")} />;
+}
