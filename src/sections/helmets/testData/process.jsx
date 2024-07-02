@@ -133,25 +133,9 @@ const rows = [
 export default function DoProcess({ ids }) {
   // const { data, error } = useSWR(`/api/api.php?dateQuery=${ids}`, fetcher);
   const [amount, setAmount] = useState(0);
-  const [dateValue, setValue] = useState(dayjs(Date.now()));
-  const [personName, setPersonName] = useState("");
   const confirm = useBoolean();
   const quickEdit = useBoolean();
-  // const { control, formValues: { errors } } = useForm();
-  // const { register, setFormValue } = useForm({ defaultValues: { test: "" } });
-  // const { handleSubmit, control } = useForm();
-  // const onSubmit =(data) => callback(prepareData(data))
-  // const methods = useForm()
-
-  // const onSubmit = (data) => console.log(data)
-  // const { handleSubmit, control } = useForm()
-  const methods = useForm({
-  
-  });
-  const {
-    register,
-    getValues
-  } = useForm()
+  const { register, getValues } = useForm();
 
   const useAction = useCallback((id) => {
     setAmount(id);
@@ -200,9 +184,7 @@ export default function DoProcess({ ids }) {
       status: "Shutdown",
     },
   ];
-  const handleChange = (event) => {
-    setPersonName(event.target.value);
-  };
+
   // if (error) {
   //   return <p> {error.message}</p>;
   // }
@@ -401,11 +383,6 @@ export default function DoProcess({ ids }) {
         open={confirm.value}
         onClose={confirm.onFalse}
       />
-      {/* <UserQuickEditForm
-        currentUser={amount}
-        open={quickEdit.value}
-        onClose={quickEdit.onFalse}
-      /> */}
     </>
   );
 
@@ -426,13 +403,9 @@ export default function DoProcess({ ids }) {
             }}
           >
             {/* <FormProvider {...methods}> */}
-            <Form  control={register}  >
+            <Form control={register}>
               <DialogTitle></DialogTitle>
-
               <DialogContent>
-              <FormControl>
-             
-                </FormControl>
                 <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
                   تحديث عملية فنية على رقم المرجع {task.id} بواسطة{" "}
                   <h4>{task.name1} </h4>
@@ -447,7 +420,7 @@ export default function DoProcess({ ids }) {
                       sm: "repeat(2, 1fr)",
                     }}
                   >
-                 <FormControl>
+                    <FormControl>
                       <Autocomplete
                         defaultValue={task.location}
                         options={locations.map((option) => option.location)}
@@ -459,13 +432,11 @@ export default function DoProcess({ ids }) {
                             inputProps={{
                               style: { fontWeight: "bolder" },
                               ...params.inputProps,
-                            
                             }}
-                         
                           />
                         )}
                       />
-                  </FormControl>
+                    </FormControl>
                     <FormControl fullWidth>
                       <InputLabel id="status1">الحالة</InputLabel>
                       <Select
@@ -478,9 +449,7 @@ export default function DoProcess({ ids }) {
                             fontWeight: "bold",
                           },
                         }}
-                        // onChange={handleChange}
                         defaultValue={task.status1}
-                      
                       >
                         {status1.map((n) => (
                           <MenuItem
@@ -500,22 +469,19 @@ export default function DoProcess({ ids }) {
                           name="date1"
                           label="التاريخ"
                           value={dayjs(task.date1)}
-                         
                           format="YYYY-MM-DD"
                           onChange={(newValue) =>
                             setDate(newValue.format("YYYY-MM-DD"))
                           }
                           variant="subtitle"
-                          // slotProps={{ textField: { size: "small" } }}
                           sx={{
                             "& .MuiInputBase-input": {
                               fontWeight: "bold",
                             },
                           }}
-                         
                         />
                       </LocalizationProvider>
-                      </FormControl>
+                    </FormControl>
                     <TimeFormatFour
                       label="الوقت"
                       mask="_"
@@ -540,27 +506,27 @@ export default function DoProcess({ ids }) {
                         sm: "repeat(3, 1fr)",
                       }}
                     >
-                       <FormControl>
-                      <TextField
-                        name="flame"
-                        defaultValue={task.flame}
-                        label="الإحتراق"
-                        inputProps={{
-                          style: {
-                            fontFamily: "sans-serif",
-                            fontWeight: "bold",
-                            textTransform: "Uppercase",
-                          },
-                        }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              RPM
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                       </FormControl>
+                      <FormControl>
+                        <TextField
+                          name="flame"
+                          defaultValue={task.flame}
+                          label="الإحتراق"
+                          inputProps={{
+                            style: {
+                              fontFamily: "sans-serif",
+                              fontWeight: "bold",
+                              textTransform: "Uppercase",
+                            },
+                          }}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                RPM
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      </FormControl>
                       <TimeFormatFour
                         label="FSNL"
                         mask="_"
@@ -597,7 +563,6 @@ export default function DoProcess({ ids }) {
                       multiline
                       rows={2}
                       fullwidth
-                  
                       defaultValue={task.action}
                       name="action"
                       label="الحدث"
@@ -727,8 +692,8 @@ export default function DoProcess({ ids }) {
 }
 
 // ----------------------------------------------------------------------
-function NestedInput({value}) {
-  const { register } = useFormContext(); // retrieve all hook methods
+// function NestedInput({ value }) {
+//   const { register } = useFormContext(); // retrieve all hook methods
 
-  return <TextField value={value.location} {...register("test")} />;
-}
+//   return <TextField value={value.location} {...register("test")} />;
+// }
