@@ -131,7 +131,7 @@ const rows = [
   },
 ];
 export default function DoProcess({ ids }) {
-  // const { data, error } = useSWR(`/api/api.php?dateQuery=${ids}`, fetcher);
+  const { data, error } = useSWR(`/api/api.php?dateQuery=${ids}`, fetcher);
   const [amount, setAmount] = useState(0);
   const confirm = useBoolean();
   const quickEdit = useBoolean();
@@ -185,12 +185,12 @@ export default function DoProcess({ ids }) {
     },
   ];
 
-  // if (error) {
-  //   return <p> {error.message}</p>;
-  // }
-  // if (!data) {
-  //   return <p>Loodings</p>;
-  // }
+  if (error) {
+    return <p> {error.message}</p>;
+  }
+  if (!data) {
+    return <p>Loodings</p>;
+  }
   const settings = useSettingsContext();
   const columns = [
     {
@@ -225,7 +225,7 @@ export default function DoProcess({ ids }) {
     },
     {
       field: "action",
-      headerName: "الوصف",
+      headerName: "2الوصف",
       headerAlign: "right",
       cellClassName: "dcs-data-theme-cell-left",
       width: 400,
@@ -305,8 +305,8 @@ export default function DoProcess({ ids }) {
         autoHeight={true}
         checkboxSelection
         disableRowSelectionOnClick
-        // rows={data}
-        rows={rows}
+        rows={data}
+        // rows={rows}
         columns={columns}
         // loading={data}
         getRowSpacing={getRowSpacing}
@@ -387,7 +387,7 @@ export default function DoProcess({ ids }) {
   );
 
   function ConfirmEditDialog({ open, amount, onClose }) {
-    const viewTemplate = rows.map((task) => {
+    const viewTemplate = data.map((task) => {
       // const viewTemplate = data.map((task) => {
       if (amount === task.id) {
         return (
