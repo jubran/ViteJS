@@ -8,13 +8,14 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import { useBoolean } from "src/hooks/use-boolean";
 import Container from "@mui/material/Container";
-import {
-  DataGrid,
-  GridActionsCellItem,
-  GridToolbarContainer,
-  gridClasses,
-} from "@mui/x-data-grid";
-import { Fragment, useCallback, useState } from "react";
+import
+  {
+    DataGrid,
+    GridActionsCellItem,
+    GridToolbarContainer,
+    gridClasses,
+  } from "@mui/x-data-grid";
+import { Fragment, useCallback, useRef, useState } from "react";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 import Iconify from "src/components/iconify";
 import { useSettingsContext } from "src/components/settings";
@@ -25,53 +26,59 @@ import useSWR from "swr";
 import { date } from "yup";
 import { Box, fontWeight, style } from "@mui/system";
 import EmptyContent from "src/components/empty-content";
-import {
-  RenderCellCreatedAt,
-  RenderCellPrice,
-  RenderCellProduct,
-  RenderCellStock,
-} from "src/sections/product/product-table-row";
+import
+  {
+    RenderCellCreatedAt,
+    RenderCellPrice,
+    RenderCellProduct,
+    RenderCellStock,
+  } from "src/sections/product/product-table-row";
 import { grey } from "@mui/material/colors";
-import {
-  Alert,
-  Autocomplete,
-  DialogContent,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
-
+import
+  {
+    Alert,
+    Autocomplete,
+    DialogContent,
+    FormControl,
+    IconButton,
+    InputAdornment,
+    InputLabel,
+    MenuItem,
+    OutlinedInput,
+    Select,
+    TextField,
+    Typography,
+  } from "@mui/material";
+import "./style.css";
 import { LoadingButton } from "@mui/lab";
-import {
-  DateCalendar,
-  DateField,
-  DatePicker,
-  LocalizationProvider,
-  TimeField,
-  TimePicker,
-} from "@mui/x-date-pickers";
+import
+  {
+    DateCalendar,
+    DateField,
+    DatePicker,
+    LocalizationProvider,
+    TimeField,
+    TimePicker,
+  } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { NumberFormatBase, usePatternFormat } from "react-number-format";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import label from "src/components/label";
-import {
-  Form,
-  FormProvider,
-  useFieldArray,
-  useForm,
-  useFormContext,
-  Controller,
-} from "react-hook-form";
+import
+  {
+    Form,
+    FormProvider,
+    useFieldArray,
+    useForm,
+    useFormContext,
+    Controller,
+  } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useReactToPrint } from "react-to-print";
+import TableDailyReport from "./table";
 
-export const fetcher = async (...args) =>
-  fetch(...args).then((res) => res.json());
+export const fetcher = async ( ...args ) =>
+  fetch( ...args ).then( ( res ) => res.json() );
 const rows = [
   {
     id: 1,
@@ -130,24 +137,29 @@ const rows = [
     note: "",
   },
 ];
-export default function DoProcess({ ids }) {
-  const { data, error } = useSWR(`/api/api.php?dateQuery=${ids}`, fetcher);
-  const [amount, setAmount] = useState(0);
+export default function DoProcess ( { ids } )
+{
+  // const { data, error } = useSWR(`/api/api.php?dateQuery=${ids}`, fetcher);
+  const [ amount, setAmount ] = useState( 0 );
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const { register, getValues } = useForm();
+  const printRef = useRef();
+  const [ isPrinted, setIsPrintred ] = useState( false );
 
-  const useAction = useCallback((id) => {
-    setAmount(id);
-    confirm.onTrue(true);
-  });
+  const useAction = useCallback( ( id ) =>
+  {
+    setAmount( id );
+    confirm.onTrue( true );
+  } );
 
-  const getRowSpacing = useCallback((params) => {
+  const getRowSpacing = useCallback( ( params ) =>
+  {
     return {
       top: params.isFirstVisible ? 0 : 5,
       bottom: params.isLastVisible ? 0 : 5,
     };
-  }, []);
+  }, [] );
   const locations = [
     {
       id: "1",
@@ -184,13 +196,25 @@ export default function DoProcess({ ids }) {
       status: "Shutdown",
     },
   ];
+  const handleOnBeforeGetContent = () =>
+  {
+    setIsPrintred( "false" );
+    setTimeout( () =>
+    {
+      handlePrint();
+    }, 100 );
+  };
+  const handlePrint = useReactToPrint( {
+    content: () => printRef.current,
+    onAfterPrint: () => setIsPrintred( false ),
+  } );
 
-  if (error) {
-    return <p> {error.message}</p>;
-  }
-  if (!data) {
-    return <p>Loodings</p>;
-  }
+  // if (error) {
+  //   return <p> {error.message}</p>;
+  // }
+  // if (!data) {
+  //   return <p>Loodings</p>;
+  // }
   const settings = useSettingsContext();
   const columns = [
     {
@@ -214,13 +238,14 @@ export default function DoProcess({ ids }) {
       hideable: false,
       filterable: false,
       sortable: false,
-      renderCell: (params) => {
-        if (params.value == "In Service")
-          return <div style={{ color: "green" }}>In Service</div>;
-        if (params.value == "Shutdown")
-          return <div style={{ color: "red" }}>Shutdown</div>;
-        if (params.value == "Stand By")
-          return <div style={{ color: "blue" }}>Stand By</div>;
+      renderCell: ( params ) =>
+      {
+        if ( params.value == "In Service" )
+          return <div style={ { color: "green" } }>In Service</div>;
+        if ( params.value == "Shutdown" )
+          return <div style={ { color: "red" } }>Shutdown</div>;
+        if ( params.value == "Stand By" )
+          return <div style={ { color: "blue" } }>Stand By</div>;
       },
     },
     {
@@ -266,28 +291,30 @@ export default function DoProcess({ ids }) {
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
-      getActions: (params) => [
+      getActions: ( params ) => [
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
+          icon={ <Iconify icon="solar:eye-bold" /> }
           label="التفاصيل"
-          onClick={() => {
-            quickEdit.onTrue(true);
-          }}
+          onClick={ () =>
+          {
+            quickEdit.onTrue( true );
+          } }
         />,
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
+          icon={ <Iconify icon="solar:pen-bold" /> }
           label="تحديث"
-          onClick={() => {
-            useAction(params.row.id);
-          }}
+          onClick={ () =>
+          {
+            useAction( params.row.id );
+          } }
         />,
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+          icon={ <Iconify icon="solar:trash-bin-trash-bold" /> }
           label="حذف"
-          sx={{ color: "error.main" }}
+          sx={ { color: "error.main" } }
         />,
       ],
     },
@@ -295,34 +322,34 @@ export default function DoProcess({ ids }) {
 
   const renderInput = (
     <Card
-      sx={{
+      sx={ {
         flexGrow: { md: 1 },
         display: { md: "flex" },
         flexDirection: { md: "column" },
-      }}
+      } }
     >
       <DataGrid
-        autoHeight={true}
+        autoHeight={ true }
         checkboxSelection
         disableRowSelectionOnClick
-        rows={data}
-        // rows={rows}
-        columns={columns}
+        // rows={data}
+        rows={ rows }
+        columns={ columns }
         // loading={data}
-        getRowSpacing={getRowSpacing}
-        pageSizeOptions={[5, 10, 25]}
-        initialState={{
+        getRowSpacing={ getRowSpacing }
+        pageSizeOptions={ [ 5, 10, 25 ] }
+        initialState={ {
           pagination: {
             paginationModel: { pageSize: 10 },
           },
-        }}
-        slots={{
+        } }
+        slots={ {
           toolbar: () => (
             <>
               <GridToolbarContainer>
                 <Stack
-                  spacing={1}
-                  flexGrow={1}
+                  spacing={ 1 }
+                  flexGrow={ 1 }
                   direction="row"
                   alignItems="center"
                   justifyContent="flex-end"
@@ -330,7 +357,8 @@ export default function DoProcess({ ids }) {
                   <Button
                     size="small"
                     color="error"
-                    startIcon={<Iconify icon="gridicons:print" />}
+                    startIcon={ <Iconify icon="gridicons:print" /> }
+                    onClick={ handleOnBeforeGetContent }
                   >
                     طباعة
                   </Button>
@@ -344,8 +372,8 @@ export default function DoProcess({ ids }) {
           noResultsOverlay: () => (
             <EmptyContent title="لم يتم العثور على أحداث" />
           ),
-        }}
-        sx={{
+        } }
+        sx={ {
           "&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within": {
             outline: "none !important",
           },
@@ -366,75 +394,392 @@ export default function DoProcess({ ids }) {
             textAlign: "right",
             paddingLeft: "10px",
           },
-          [`& .${gridClasses.row}`]: {
-            bgcolor: (theme) =>
-              theme.palette.mode === "light" ? grey[200] : grey[900],
+          [ `& .${ gridClasses.row }` ]: {
+            bgcolor: ( theme ) =>
+              theme.palette.mode === "light" ? grey[ 200 ] : grey[ 900 ],
           },
           textTransform: "Uppercase",
-        }}
+        } }
       />
     </Card>
   );
   return (
     <>
-      {renderInput}
+      { renderInput }
       <ConfirmEditDialog
-        amount={amount}
-        open={confirm.value}
-        onClose={confirm.onFalse}
+        amount={ amount }
+        open={ confirm.value }
+        onClose={ confirm.onFalse }
       />
+
+      <Dialog
+        disablePortal
+        fullWidth
+        maxWidth={ false }
+        open={isPrinted}
+        // open={ true }
+        onClose={ () => setIsPrintred( false ) }
+        PaperProps={ {
+          sx: { maxWidth: "80%" },
+        } }
+      >
+        <DialogContent
+          sx={
+            {
+              // whiteSpace: 'nowrap',
+            }
+          }
+        >
+          <Box
+            style={ { display: isPrinted } }
+            ref={ printRef }
+            width={ "100%" }
+            display="flex"
+            justifyContent={ "center" }
+            padding={ "30px" }
+          >
+            <Box dir="ltr">
+              <div
+                style={ {
+                  width: "100%",
+                  // maxWidth: "800px",
+                  margin: "auto",
+                  padding: "16px",
+                  border: "1px solid #eee",
+                  fontSize: "16px",
+                  lineHeight: "24px",
+                  fontFamily: "Inter sans-serif",
+                  color: "#555",
+
+                  // backgroundColor: "#F9FAFC",
+                } }
+              >
+                <table style={ { fontSize: "12px", lineHeight: "20px" } }>
+                  <thead>
+                    <tr>
+                      <td style={ { padding: " 0 16px 18px 16px " } }>
+                        <h1
+                          style={ {
+                            color: "#1A1C21",
+                            fontSize: "18px",
+                            fontStyle: "normal",
+                            fontWeight: "600",
+                            lineHeight: "normal",
+                          } }
+                        >
+                          Jazan Power Plant
+                        </h1>
+                        <p>Operation D</p>
+                      </td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <table
+                          style={ {
+                            backgroundColor: "#FFF",
+                            padding: "20px 16px",
+                            border: "1px solid #D7DAE0",
+                            width: "100%",
+                            borderRadius: "12px",
+                            fontSize: "12px",
+                            lineHeight: "20px",
+                            tableLayout: "fixed",
+                          } }
+                        >
+                          <tbody>
+                            <tr>
+                              <td
+                                style={ {
+                                  verticalAlign: "top",
+                                  width: "50%",
+                                  paddingRight: "20px",
+                                  paddingBottom: "35px",
+                                } }
+                              >
+                                <p
+                                  style={ {
+                                    fontWeight: "700",
+                                    color: "#1A1C21",
+                                  } }
+                                >
+                                  Morning Shift
+                                </p>
+                                <p
+                                  className="ge-ss"
+                                  style={ { color: "#5E6470" } }
+                                >
+                                  جبران المالكي
+                                </p>
+
+                                <p
+                                  style={ {
+                                    fontWeight: "700",
+                                    color: "#1A1C21",
+                                  } }
+                                >
+                                  Night Shift
+                                </p>
+                                <p style={ { color: "#5E6470" } }>محمد حمدي</p>
+                              </td>
+                              <td
+                                style={ {
+                                  verticalAlign: "top",
+                                  paddingBottom: "35px",
+                                  width: "40%",
+                                } }
+                              >
+                                <table
+                                  style={ {
+                                    tableLayout: "fixed",
+                                    width: "-webkit-fill-available",
+                                  } }
+                                >
+                                  <tr>
+                                    <th
+                                      style={ {
+                                        textAlign: "left",
+                                        color: "#1A1C21",
+                                      } }
+                                    >
+                                      Date
+                                    </th>
+                                    <td style={ { textAlign: "right" } }>
+                                      30-11-2023
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th
+                                      style={ {
+                                        textAlign: "left",
+                                        color: "#1A1C21",
+                                      } }
+                                    >
+                                      Day Name
+                                    </th>
+                                    <td style={ { textAlign: "right" } }>
+                                      Monday
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th
+                                      style={ {
+                                        textAlign: "left",
+                                        color: "#1A1C21",
+                                      } }
+                                    >
+                                      Data
+                                    </th>
+                                    <td style={ { textAlign: "right" } }>
+                                      100 Data
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th
+                                      style={ {
+                                        textAlign: "left",
+                                        color: "#1A1C21 ",
+                                      } }
+                                    >
+                                      Data
+                                    </th>
+                                    <td style={ { textAlign: "right" } }>
+                                      19:58
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th
+                                      style={ {
+                                        textAlign: "left",
+                                        color: "#1A1C21",
+                                      } }
+                                    >
+                                      Data
+                                    </th>
+                                    <td style={ { textAlign: "right" } }>
+                                      20:58
+                                    </td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <td colspan="3">
+                                <table
+                                  style={ { width: "100%", borderSpacing: "0" } }
+                                >
+                                  <thead>
+                                    <tr style={ { textTransform: "uppercase" } }>
+                                      <td
+                                        className="ge-ss"
+                                        style={ {
+                                          
+                                          width: "100px",
+                                          padding: "8px 0",
+                                          border: "1px solid #D7DAE0",
+                                          
+                                          textAlign: "center",
+                                          
+                                        } }
+                                      >
+                                        الموقع
+                                      </td>
+                                      <td
+                                        className="ge-ss"
+                                        style={ {
+                                          padding: "8px 0",
+                                          // borderBlock: "1px solid #D7DAE0",
+                                          border: "1px solid #D7DAE0",
+                                          width: "100px",
+                                          textAlign: "center",
+                                        } }
+                                      >
+                                        الوقت
+                                      </td>
+                                      <td
+                                        className="ge-ss"
+                                        style={ {
+                                          padding: "8px 0",
+                                          // bborderBlock: "1px solid #D7DAE0",
+                                          border: "1px solid #D7DAE0",
+                                          textAlign: "center",
+                                        } }
+                                      >
+                                        الحدث
+                                      </td>
+                                      <td
+                                        className="ge-ss"
+                                        style={ {
+                                          padding: "8px 0",
+                                          border: "1px solid #D7DAE0",
+                                          textAlign: "center",
+                                          width: "120px",
+                                        } }
+                                      >
+                                        الحالة
+                                      </td>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {rows.map(row =>(
+                                      <tr>
+                                      <td className="p-taq"> <p>{row.location}</p></td>
+                                      <td className="p-taq">{row.time1}</td>
+                                      <td className="p-taq text-left">{row.action}</td>
+                                      <td className="p-taq">{row.status1}</td>
+                                    </tr>
+                                    ))}
+                                    
+                                  </tbody>
+                                  <tfoot>
+                                    <tr>
+                                      <td
+                                        style={ {
+                                          padding: " 12px 0",
+                                          borderTop: "1px solid #D7DAE0 ",
+                                        } }
+                                      ></td>
+                                      <td
+                                        style={ {
+                                          borderTop: "1px solid #D7DAE0",
+                                        } }
+                                        colspan="3"
+                                      ></td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <p style={ { color: "#1A1C21" } }>
+                                          (1) Note Todat
+                                        </p>
+                                        <p style={ { color: "#1A1C21" } }>
+                                          (2) Note Today
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  </tfoot>
+                                </table>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td style={ { paddingtop: "30px" } }>
+                        <p style={ { display: "flex", gap: "0 13px" } }>
+                          <span style={ { color: "#1A1C21", fontWeight: "700" } }>
+                            This Reported By
+                          </span>
+                          <span>Ali Algamdi</span>
+                          <span>86718</span>
+                        </p>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </Box>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </>
   );
 
-  function ConfirmEditDialog({ open, amount, onClose }) {
-    const viewTemplate = data.map((task) => {
-      // const viewTemplate = data.map((task) => {
-      if (amount === task.id) {
+  function ConfirmEditDialog ( { open, amount, onClose } )
+  {
+    // const viewTemplate = data.map((task) => {
+    const viewTemplate = rows.map( ( task ) =>
+    {
+      if ( amount === task.id ) {
         return (
           <Dialog
-            key={task.id}
+            key={ task.id }
             disablePortal
             fullWidth
-            maxWidth={false}
-            open={open}
-            onClose={onClose}
-            PaperProps={{
+            maxWidth={ false }
+            open={ open }
+            onClose={ onClose }
+            PaperProps={ {
               sx: { maxWidth: 720 },
-            }}
+            } }
           >
-            {/* <FormProvider {...methods}> */}
-            <Form control={register}>
+            {/* <FormProvider {...methods}> */ }
+            <Form control={ register }>
               <DialogTitle></DialogTitle>
               <DialogContent>
-                <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
-                  تحديث عملية فنية على رقم المرجع {task.id} بواسطة{" "}
-                  <h4>{task.name1} </h4>
+                <Alert variant="outlined" severity="info" sx={ { mb: 3 } }>
+                  تحديث عملية فنية على رقم المرجع { task.id } بواسطة{ " " }
+                  <h4>{ task.name1 } </h4>
                 </Alert>
-                <Box display="grid" rowGap={3}>
+                <Box display="grid" rowGap={ 3 }>
                   <Box
-                    rowGap={3}
-                    columnGap={2}
+                    rowGap={ 3 }
+                    columnGap={ 2 }
                     display="grid"
-                    gridTemplateColumns={{
+                    gridTemplateColumns={ {
                       xs: "repeat(1, 1fr)",
                       sm: "repeat(2, 1fr)",
-                    }}
+                    } }
                   >
                     <FormControl>
                       <Autocomplete
-                        defaultValue={task.location}
-                        options={locations.map((option) => option.location)}
-                        renderInput={(params) => (
+                        defaultValue={ task.location }
+                        options={ locations.map( ( option ) => option.location ) }
+                        renderInput={ ( params ) => (
                           <TextField
-                            {...params}
+                            { ...params }
                             name="location"
                             label="الموقع"
-                            inputProps={{
+                            inputProps={ {
                               style: { fontWeight: "bolder" },
                               ...params.inputProps,
-                            }}
+                            } }
                           />
-                        )}
+                        ) }
                       />
                     </FormControl>
                     <FormControl fullWidth>
@@ -444,41 +789,41 @@ export default function DoProcess({ ids }) {
                         labelId="status1"
                         id="demo-simple-select"
                         label="الحالة"
-                        sx={{
+                        sx={ {
                           "& .MuiSelect-select": {
                             fontWeight: "bold",
                           },
-                        }}
-                        defaultValue={task.status1}
+                        } }
+                        defaultValue={ task.status1 }
                       >
-                        {status1.map((n) => (
+                        { status1.map( ( n ) => (
                           <MenuItem
-                            key={n.id}
-                            value={n.status}
-                            style={{ fontWeight: "bold" }}
+                            key={ n.id }
+                            value={ n.status }
+                            style={ { fontWeight: "bold" } }
                           >
-                            {n.status}
+                            { n.status }
                           </MenuItem>
-                        ))}
+                        ) ) }
                       </Select>
                     </FormControl>
-                    {/* <Box sx={{ display: { xs: "none", sm: "block" } }} /> */}
+                    {/* <Box sx={{ display: { xs: "none", sm: "block" } }} /> */ }
                     <FormControl>
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <LocalizationProvider dateAdapter={ AdapterDayjs }>
                         <DatePicker
                           name="date1"
                           label="التاريخ"
-                          value={dayjs(task.date1)}
+                          value={ dayjs( task.date1 ) }
                           format="YYYY-MM-DD"
-                          onChange={(newValue) =>
-                            setDate(newValue.format("YYYY-MM-DD"))
+                          onChange={ ( newValue ) =>
+                            setDate( newValue.format( "YYYY-MM-DD" ) )
                           }
                           variant="subtitle"
-                          sx={{
+                          sx={ {
                             "& .MuiInputBase-input": {
                               fontWeight: "bold",
                             },
-                          }}
+                          } }
                         />
                       </LocalizationProvider>
                     </FormControl>
@@ -486,115 +831,115 @@ export default function DoProcess({ ids }) {
                       label="الوقت"
                       mask="_"
                       name="time1"
-                      customInput={TextField}
-                      value={task.time1}
-                      inputProps={{
+                      customInput={ TextField }
+                      value={ task.time1 }
+                      inputProps={ {
                         style: {
                           fontFamily: "sans-serif",
                           fontWeight: "bold",
                           textTransform: "Uppercase",
                         },
-                      }}
+                      } }
                     />
                   </Box>
-                  {task.synch ? (
+                  { task.synch ? (
                     <Box
-                      columnGap={3}
+                      columnGap={ 3 }
                       display="grid"
-                      gridTemplateColumns={{
+                      gridTemplateColumns={ {
                         xs: "repeat(1, 1fr)",
                         sm: "repeat(3, 1fr)",
-                      }}
+                      } }
                     >
                       <FormControl>
                         <TextField
                           name="flame"
-                          defaultValue={task.flame}
+                          defaultValue={ task.flame }
                           label="الإحتراق"
-                          inputProps={{
+                          inputProps={ {
                             style: {
                               fontFamily: "sans-serif",
                               fontWeight: "bold",
                               textTransform: "Uppercase",
                             },
-                          }}
-                          InputProps={{
+                          } }
+                          InputProps={ {
                             startAdornment: (
                               <InputAdornment position="start">
                                 RPM
                               </InputAdornment>
                             ),
-                          }}
+                          } }
                         />
                       </FormControl>
                       <TimeFormatFour
                         label="FSNL"
                         mask="_"
-                        customInput={TextField}
-                        value={task.fsnl}
-                        inputProps={{
+                        customInput={ TextField }
+                        value={ task.fsnl }
+                        inputProps={ {
                           style: {
                             fontFamily: "sans-serif",
                             fontWeight: "bold",
                             textTransform: "Uppercase",
                           },
-                        }}
+                        } }
                       />
                       <TimeFormatFour
                         label="SYNCH"
                         name="synch"
                         mask="_"
-                        customInput={TextField}
-                        value={task.synch}
-                        inputProps={{
+                        customInput={ TextField }
+                        value={ task.synch }
+                        inputProps={ {
                           style: {
                             fontFamily: "sans-serif",
                             fontWeight: "bold",
                             textTransform: "Uppercase",
                           },
-                        }}
+                        } }
                       />
                     </Box>
-                  ) : null}
+                  ) : null }
 
                   <Box display="grid">
                     <TextField
                       dir="ltr"
                       multiline
-                      rows={2}
+                      rows={ 2 }
                       fullwidth
-                      defaultValue={task.action}
+                      defaultValue={ task.action }
                       name="action"
                       label="الحدث"
-                      inputProps={{
+                      inputProps={ {
                         style: {
                           fontFamily: "sans-serif",
                           fontWeight: "bold",
                           textTransform: "Uppercase",
                         },
-                      }}
+                      } }
                     />
                   </Box>
                   <Box display="grid">
                     <TextField
                       dir="ltr"
                       name="notes"
-                      defaultValue={task.note}
-                      label={task.note.length > 0 ? "ملاحظات" : "لاتوجد ملاحظة"}
-                      inputProps={{
+                      defaultValue={ task.note }
+                      label={ task.note.length > 0 ? "ملاحظات" : "لاتوجد ملاحظة" }
+                      inputProps={ {
                         style: {
                           fontFamily: "sans-serif",
                           fontWeight: "bold",
                           textTransform: "Uppercase",
                         },
-                      }}
+                      } }
                     />
                   </Box>
                 </Box>
               </DialogContent>
 
               <DialogActions>
-                <Button variant="outlined" onClick={onClose}>
+                <Button variant="outlined" onClick={ onClose }>
                   الغاء
                 </Button>
 
@@ -602,38 +947,40 @@ export default function DoProcess({ ids }) {
                   type="submit"
                   variant="outlined"
                   color="error"
-                  endIcon={<Iconify icon="solar:pen-bold" />}
+                  endIcon={ <Iconify icon="solar:pen-bold" /> }
                 >
                   تحديث
                 </LoadingButton>
               </DialogActions>
             </Form>
-            {/* </FormProvider> */}
+            {/* </FormProvider> */ }
           </Dialog>
         );
       }
-    });
-    return <Fragment>{viewTemplate}</Fragment>;
+    } );
+    return <Fragment>{ viewTemplate }</Fragment>;
   }
-  function TimeFormatFour(props) {
-    const { format, ...rest } = usePatternFormat({ ...props, format: "##:##" });
-    const _format = (val) => {
-      let hours = val.substring(0, 2);
-      const minutes = val.substring(2, 4);
-      if (hours.length === 1 && hours[0] > 2) {
-        hours = `0${hours[0]}`;
-      } else if (hours.length === 2) {
-        if (Number(hours) === 0) {
+  function TimeFormatFour ( props )
+  {
+    const { format, ...rest } = usePatternFormat( { ...props, format: "##:##" } );
+    const _format = ( val ) =>
+    {
+      let hours = val.substring( 0, 2 );
+      const minutes = val.substring( 2, 4 );
+      if ( hours.length === 1 && hours[ 0 ] > 2 ) {
+        hours = `0${ hours[ 0 ] }`;
+      } else if ( hours.length === 2 ) {
+        if ( Number( hours ) === 0 ) {
           hours = `00`;
-        } else if (Number(hours) > 23) {
+        } else if ( Number( hours ) > 23 ) {
           hours = "00";
         }
       }
 
-      return format(`${hours}${minutes}`);
+      return format( `${ hours }${ minutes }` );
     };
 
-    return <NumberFormatBase format={_format} {...rest} />;
+    return <NumberFormatBase format={ _format } { ...rest } />;
   }
 
   // ----------------------------------------------------------------------
