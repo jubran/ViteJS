@@ -76,6 +76,7 @@ import
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useReactToPrint } from "react-to-print";
 import TableDailyReport from "./table";
+import { whitespace } from "stylis";
 
 export const fetcher = async ( ...args ) =>
   fetch( ...args ).then( ( res ) => res.json() );
@@ -121,7 +122,7 @@ const rows = [
     location: "GT30",
     date1: "2024-06-02",
     time1: "18:15",
-    action: "gt trip on loss of flame",
+    action: "gt trip on loss of flame gt trip on loss of flame gt trip on loss of flame gt trip on loss of flame ",
     status1: "Stand By",
     name1: "جبران حسن اليحيوي",
     note: "",
@@ -250,14 +251,15 @@ export default function DoProcess ( { ids } )
     },
     {
       field: "action",
-      headerName: "2الوصف",
+      headerName: "الوصف",
       headerAlign: "right",
-      cellClassName: "dcs-data-theme-cell-left",
+      cellClassName: "dcs-data-theme-cell-left ",
       width: 400,
       flex: 1,
       disableColumnMenu: true,
       filterable: false,
       sortable: false,
+      
     },
     {
       field: "time1",
@@ -273,8 +275,8 @@ export default function DoProcess ( { ids } )
     {
       field: "location",
       headerName: "الموقع",
-      headerAlign: "right",
-      cellClassName: "dcs-data-theme-cell-left",
+      headerAlign: "center",
+      cellClassName: "dcs-data-theme-cell",
       width: 130,
       disableColumnMenu: true,
       filterable: false,
@@ -393,6 +395,7 @@ export default function DoProcess ( { ids } )
             justifyContent: "right",
             textAlign: "right",
             paddingLeft: "10px",
+            whiteSpace: "normal !important",
           },
           [ `& .${ gridClasses.row }` ]: {
             bgcolor: ( theme ) =>
@@ -665,7 +668,7 @@ export default function DoProcess ( { ids } )
                                   <tbody>
                                     {rows.map(row =>(
                                       <tr>
-                                      <td className="p-taq"> <p>{row.location}</p></td>
+                                      <td className="p-taq"> {row.location}</td>
                                       <td className="p-taq">{row.time1}</td>
                                       <td className="p-taq text-left">{row.action}</td>
                                       <td className="p-taq">{row.status1}</td>
@@ -922,17 +925,19 @@ export default function DoProcess ( { ids } )
                   </Box>
                   <Box display="grid">
                     <TextField
+                    error={task.note.length > 0 ? true : false}
                       dir="ltr"
                       name="notes"
                       defaultValue={ task.note }
-                      label={ task.note.length > 0 ? "ملاحظات" : "لاتوجد ملاحظة" }
+                      label={ task.note.length > 0 ?  "ملاحظات" : "لاتوجد ملاحظة" }
                       inputProps={ {
                         style: {
+                       color: "" == task.note.length > 0 ? "" : "red",
                           fontFamily: "sans-serif",
                           fontWeight: "bold",
                           textTransform: "Uppercase",
                         },
-                      } }
+                      }}
                     />
                   </Box>
                 </Box>
