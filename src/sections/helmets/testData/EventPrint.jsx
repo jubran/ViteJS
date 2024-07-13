@@ -1,7 +1,7 @@
 import { Box } from "@mui/system";
 import "./style.css"
 
-export default function EventPrint({ event ,isPrinted , printRef}){
+export default function EventPrint({ rows1 ,isPrinted , printRef}){
     
     return (
         <>
@@ -238,7 +238,7 @@ export default function EventPrint({ event ,isPrinted , printRef}){
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {event.map(row =>(
+                                    {rows1.map(row =>(
                                       <tr>
                                       <td className="p-taq"> {row.location}</td>
                                       <td className="p-taq">{row.time1}</td>
