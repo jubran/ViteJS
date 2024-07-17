@@ -22,6 +22,8 @@ import
 import ProductPage from "./EventId";
 import EventPrint from "./EventPrint";
 import ShowDataGrid from "./ShowDataGrid";
+import FormData from "./form";
+import DataGridApi from "../pro/dataGrid";
 
 export const fetcher = async ( ...args ) =>
   fetch( ...args ).then( ( res ) => res.json() );
@@ -120,7 +122,9 @@ export default function DoProcess ( { ids } )
         flexDirection: { md: "column" },
       } }
     >
-    <ShowDataGrid rows1={rows}  />
+    {/* <ShowDataGrid rows1={rows}  /> */}
+
+    <DataGridApi />
       
     </Card>
     
@@ -141,6 +145,7 @@ export default function DoProcess ( { ids } )
     {
       if ( amount === task.id ) {
         return (
+          
           <Dialog
             key={ task.id }
             disablePortal
@@ -155,8 +160,10 @@ export default function DoProcess ( { ids } )
             <DialogTitle></DialogTitle>
             <DialogContent>
             <ProductPage productId={task} onClose={onClose}/>
+           
             </DialogContent>
           </Dialog>
+          
         );
       }
     } );
