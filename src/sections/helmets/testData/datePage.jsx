@@ -1,9 +1,8 @@
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import { useState } from "react";
+import {  useState } from "react";
 import DoProcess from "./process";
-import Card from "@mui/material/Card";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
@@ -13,11 +12,14 @@ import { RouterLink } from "src/routes/components";
 import { paths } from "src/routes/paths";
 import Iconify from "src/components/iconify";
 
+import { useBoolean } from "src/hooks/use-boolean";
+import ConfirmNew from "../dialogs/newDailyData";
+
 export default function ViewDate() {
   const [ids, setDate] = useState(dayjs(Date.now()).format("YYYY-MM-DD"));
   const settings = useSettingsContext();
   const [dateValue, setValue] = useState(dayjs(Date.now()));
-
+  const confirmEmpty = useBoolean();
   return (
     <>
       <Container
@@ -39,6 +41,7 @@ export default function ViewDate() {
               variant="contained"
               color="primary"
               startIcon={<Iconify icon="mingcute:add-line" />}
+              onClick={confirmEmpty.onTrue}
             >
               إضافة حدث جديد
             </Button>
@@ -74,7 +77,9 @@ export default function ViewDate() {
           </Stack>
         </LocalizationProvider>
         <DoProcess ids={ids} />
+        <ConfirmNew open={confirmEmpty.value} onClose={confirmEmpty.onFalse} />
       </Container>
     </>
   );
+ 
 }

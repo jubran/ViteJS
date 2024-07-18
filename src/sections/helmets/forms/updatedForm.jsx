@@ -4,6 +4,7 @@ import {
   Autocomplete,
   Button,
   DialogActions,
+  DialogContent,
   FormControl,
   InputAdornment,
   InputLabel,
@@ -16,53 +17,16 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { memo, useState } from "react";
-import { NumberFormatBase, usePatternFormat } from "react-number-format";
 import Iconify from "src/components/iconify";
 import { useBoolean } from "src/hooks/use-boolean";
-
-const locations = [
-  {
-    id: "1",
-    location: "GT21",
-  },
-  {
-    id: "2",
-    location: "GT27",
-  },
-  {
-    id: "3",
-    location: "GT30",
-  },
-  {
-    id: "4",
-    location: "GT20",
-  },
-  {
-    id: "5",
-    location: "SKID#1 SP#1",
-  },
-];
-const status1 = [
-  {
-    id: "1",
-    status: "In Service",
-  },
-  {
-    id: "2",
-    status: "Stand By",
-  },
-  {
-    id: "3",
-    status: "Shutdown",
-  },
-];
-
-const ShippingForm = memo(function ShippingForm({
+import TimeFormatFour from "../utils/timeFormatFour";
+import { locations , status1} from "./variable"
+const UpdatedForm = memo(function UpdatedForm({
   onSubmit,
-  productId,
+  updatedData,
   onClose,
 }) {
-  const data = productId;
+  const data = updatedData ;
   const confirm = useBoolean();
   let startTime = performance.now();
   while (performance.now() - startTime < 500) {
@@ -79,6 +43,7 @@ const ShippingForm = memo(function ShippingForm({
   }
   return (
     <form onSubmit={handleSubmit}>
+         <DialogContent>
       <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
         تحديث عملية فنية على رقم المرجع {data.id} بواسطة <h4>{data.id} </h4>
       </Alert>
@@ -261,6 +226,7 @@ const ShippingForm = memo(function ShippingForm({
         </Box>
       </Box>
       ;
+      </DialogContent>
       <DialogActions>
         <Button variant="outlined" onClick={onClose}>
           الغاء
@@ -278,24 +244,5 @@ const ShippingForm = memo(function ShippingForm({
     </form>
   );
 });
-function TimeFormatFour(props) {
-  const { format, ...rest } = usePatternFormat({ ...props, format: "##:##" });
-  const _format = (val) => {
-    let hours = val.substring(0, 2);
-    const minutes = val.substring(2, 4);
-    if (hours.length === 1 && hours[0] > 2) {
-      hours = `0${hours[0]}`;
-    } else if (hours.length === 2) {
-      if (Number(hours) === 0) {
-        hours = `00`;
-      } else if (Number(hours) > 23) {
-        hours = "00";
-      }
-    }
 
-    return format(`${hours}${minutes}`);
-  };
-
-  return <NumberFormatBase format={_format} {...rest} />;
-}
-export default ShippingForm;
+export default UpdatedForm;

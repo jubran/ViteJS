@@ -7,37 +7,41 @@ import {
   gridClasses,
   GridToolbarContainer,
 } from "@mui/x-data-grid";
-import { useCallback, useRef, useState } from "react";
+import { Fragment, useCallback, useRef, useState } from "react";
 import EmptyContent from "src/components/empty-content/empty-content";
 import Iconify from "src/components/iconify";
-
 import { grey } from "@mui/material/colors";
 import EventPrint from "./EventPrint";
-
-export default function ShowDataGrid({rows1 }) {
-    const data = rows1
-    const [ isPrinted, setIsPrintred ] = useState( false );
-    const printRef = useRef();
-    const handleOnBeforeGetContent = () =>
-        {
-          setIsPrintred( "false" );
-          setTimeout( () =>
-          {
-            handlePrint();
-          }, 100 );
-        };
-        const handlePrint = useReactToPrint( {
-          content: () => printRef.current,
-          onAfterPrint: () => setIsPrintred( false ),
-        } );
+import { useBoolean } from "src/hooks/use-boolean";
+import HandelEditForm from "../dialogs/updateDailyData";
+export default function ShowDataGrid({ rows1 }) {
+  const data = rows1;
+  const [isPrinted, setIsPrintred] = useState(false);
+  const [updatedData, setUpdatedData] = useState();
+  const confirmUpdated = useBoolean();
+  const confirmEmpty = useBoolean();
+  const printRef = useRef();
+  const handleOnBeforeGetContent = () => {
+    setIsPrintred("false");
+    setTimeout(() => {
+      handlePrint();
+    }, 100);
+  };
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+    onAfterPrint: () => setIsPrintred(false),
+  });
   const getRowSpacing = useCallback((params) => {
     return {
       top: params.isFirstVisible ? 0 : 5,
       bottom: params.isLastVisible ? 0 : 5,
     };
   }, []);
+  const useAction = useCallback((row) => {
+    setUpdatedData(row);
+    confirmUpdated.onTrue(true);
+  });
 
-  
   const columns = [
     {
       field: "date1",
@@ -123,7 +127,7 @@ export default function ShowDataGrid({rows1 }) {
           icon={<Iconify icon="solar:pen-bold" />}
           label="تحديث"
           onClick={() => {
-            useAction(params.row.id);
+            useAction(params.row);
           }}
         />,
         <GridActionsCellItem
@@ -138,88 +142,87 @@ export default function ShowDataGrid({rows1 }) {
 
   return (
     <>
-    
-    <DataGrid
-      autoHeight={true}
-      checkboxSelection
-      disableRowSelectionOnClick
-      rows={data}
-      columns={columns}
-      getRowSpacing={getRowSpacing}
-      pageSizeOptions={[5, 10, 25]}
-      initialState={{
-        pagination: {
-          paginationModel: { pageSize: 10 },
-        },
-      }}
-      slots={{
-        toolbar: () => (
-          <>
-            <GridToolbarContainer>
-              <Stack
-                spacing={1}
-                flexGrow={1}
-                direction="row"
-                alignItems="center"
-                justifyContent="flex-end"
-              >
-                <Button
-                  size="small"
-                  color="error"
-                  startIcon={<Iconify icon="gridicons:print" />}
-                  onClick={handleOnBeforeGetContent}
+      <DataGrid
+        autoHeight={true}
+        checkboxSelection
+        disableRowSelectionOnClick
+        rows={data}
+        columns={columns}
+        getRowSpacing={getRowSpacing}
+        pageSizeOptions={[5, 10, 25]}
+        initialState={{
+          pagination: {
+            paginationModel: { pageSize: 10 },
+          },
+        }}
+        slots={{
+          toolbar: () => (
+            <>
+              <GridToolbarContainer>
+                <Stack
+                  spacing={1}
+                  flexGrow={1}
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="flex-end"
                 >
-                  طباعة
-                </Button>
-              </Stack>
-            </GridToolbarContainer>
-          </>
-        ),
-        noRowsOverlay: () => (
-          <EmptyContent title="لاتوجد أحداث لهذا اليوم حتى هذه اللحضة" />
-        ),
-        noResultsOverlay: () => (
-          <EmptyContent title="لم يتم العثور على أحداث" />
-        ),
-      }}
-      sx={{
-        "&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within": {
-          outline: "none !important",
-        },
-        "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within ": {
-          outline: "none !important",
-        },
-        "& .dcs-data-theme-cell": {
-          fontFamily: "Public Sans, sans-serif",
-          fontWeight: "bold",
-          color: "#1a3e72",
-          justifyContent: "center",
-        },
-        "& .dcs-data-theme-cell-left": {
-          fontFamily: "Public Sans, sans-serif",
-          fontWeight: "bold",
-          color: "#1a3e72",
-          justifyContent: "right",
-          textAlign: "right",
-          paddingLeft: "10px",
-          whiteSpace: "normal !important",
-        },
-        [`& .${gridClasses.row}`]: {
-          bgcolor: (theme) =>
-            theme.palette.mode === "light" ? grey[200] : grey[900],
-        },
-        textTransform: "Uppercase",
-      }}
-    />
-    <Dialog
+                  <Button
+                    size="small"
+                    color="error"
+                    startIcon={<Iconify icon="gridicons:print" />}
+                    onClick={handleOnBeforeGetContent}
+                  >
+                    طباعة
+                  </Button>
+                </Stack>
+              </GridToolbarContainer>
+            </>
+          ),
+          noRowsOverlay: () => (
+            <EmptyContent title="لاتوجد أحداث لهذا اليوم حتى هذه اللحضة" />
+          ),
+          noResultsOverlay: () => (
+            <EmptyContent title="لم يتم العثور على أحداث" />
+          ),
+        }}
+        sx={{
+          "&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within": {
+            outline: "none !important",
+          },
+          "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within ": {
+            outline: "none !important",
+          },
+          "& .dcs-data-theme-cell": {
+            fontFamily: "Public Sans, sans-serif",
+            fontWeight: "bold",
+            color: "#1a3e72",
+            justifyContent: "center",
+          },
+          "& .dcs-data-theme-cell-left": {
+            fontFamily: "Public Sans, sans-serif",
+            fontWeight: "bold",
+            color: "#1a3e72",
+            justifyContent: "right",
+            textAlign: "right",
+            paddingLeft: "10px",
+            whiteSpace: "normal !important",
+          },
+          [`& .${gridClasses.row}`]: {
+            bgcolor: (theme) =>
+              theme.palette.mode === "light" ? grey[200] : grey[900],
+          },
+          textTransform: "Uppercase",
+        }}
+      />
+      <Dialog
         disablePortal
         fullWidth
-        maxWidth={ false }
+        maxWidth={false}
         open={isPrinted}
-        onClose={ () => setIsPrintred( false ) }
-        PaperProps={ {
+        onClose={() => setIsPrintred(false)}
+        PaperProps={{
           sx: { maxWidth: "80%" },
-        } }
+        }}
       >
         <DialogContent
           sx={
@@ -228,13 +231,14 @@ export default function ShowDataGrid({rows1 }) {
             }
           }
         >
-             <EventPrint rows1={data} isPrinted={isPrinted} printRef={printRef} />
-
+          <EventPrint rows1={data} isPrinted={isPrinted} printRef={printRef} />
         </DialogContent>
       </Dialog>
+      <HandelEditForm
+        onClose={confirmUpdated.onFalse}
+        open={confirmUpdated.value}
+        updatedData={updatedData}
+      />
     </>
-
-    
   );
-  
 }

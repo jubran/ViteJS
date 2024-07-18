@@ -1,49 +1,12 @@
-
 import Card from "@mui/material/Card";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import { useBoolean } from "src/hooks/use-boolean";
 
-import { Fragment, useCallback, useRef, useState } from "react";
-import { useSettingsContext } from "src/components/settings";
-
-import
-  {
-    DialogContent,
-  } from "@mui/material";
-
-
-import
-  {
-
-    useForm,
-  } from "react-hook-form";
-
-import ProductPage from "./EventId";
-import EventPrint from "./EventPrint";
 import ShowDataGrid from "./ShowDataGrid";
-import FormData from "./form";
-import DataGridApi from "../pro/dataGrid";
+import useSWR from "swr";
+export const fetcher = async (...args) =>
+  fetch(...args).then((res) => res.json());
 
-export const fetcher = async ( ...args ) =>
-  fetch( ...args ).then( ( res ) => res.json() );
-
-export default function DoProcess ( { ids } )
-{
+export default function DoProcess({ ids }) {
   // const { data, error } = useSWR(`/api/api.php?dateQuery=${ids}`, fetcher);
-  const [ amount, setAmount ] = useState( 0 );
-  const confirm = useBoolean();
-  const quickEdit = useBoolean();
-  const { register, getValues } = useForm();
-  const printRef = useRef();
-  const [ isPrinted, setIsPrintred ] = useState( false );
-
-  const useAction = useCallback( ( id ) =>
-  {
-    setAmount( id );
-    confirm.onTrue( true );
-  } );
-
   const rows = [
     {
       id: 1,
@@ -86,7 +49,8 @@ export default function DoProcess ( { ids } )
       location: "GT30",
       date1: "2024-06-02",
       time1: "18:15",
-      action: "gt trip on loss of flame gt trip on loss of flame gt trip on loss of flame gt trip on loss of flame ",
+      action:
+        "gt trip on loss of flame gt trip on loss of flame gt trip on loss of flame gt trip on loss of flame ",
       status1: "Stand By",
       name1: "جبران حسن اليحيوي",
       note: "",
@@ -103,70 +67,22 @@ export default function DoProcess ( { ids } )
     },
   ];
 
-
-
   // if (error) {
   //   return <p> {error.message}</p>;
   // }
   // if (!data) {
   //   return <p>Loodings</p>;
   // }
-  const settings = useSettingsContext();
-
-
   const renderInput = (
     <Card
-      sx={ {
+      sx={{
         flexGrow: { md: 1 },
         display: { md: "flex" },
         flexDirection: { md: "column" },
-      } }
+      }}
     >
-    {/* <ShowDataGrid rows1={rows}  /> */}
-
-    <DataGridApi />
-      
+      <ShowDataGrid rows1={rows} />
     </Card>
-    
   );
-  return (
-    <>
-      { renderInput }
-    
-
-      
-    </>
-  );
-
-  function ConfirmEditDialog ( { open, amount, onClose } )
-  {
-    // const viewTemplate = data.map((task) => {
-    const viewTemplate = rows.map( ( task ) =>
-    {
-      if ( amount === task.id ) {
-        return (
-          
-          <Dialog
-            key={ task.id }
-            disablePortal
-            fullWidth
-            maxWidth={ false }
-            open={ open }
-            onClose={ onClose }
-            PaperProps={ {
-              sx: { maxWidth: 720 },
-            } }
-          >
-            <DialogTitle></DialogTitle>
-            <DialogContent>
-            <ProductPage productId={task} onClose={onClose}/>
-           
-            </DialogContent>
-          </Dialog>
-          
-        );
-      }
-    } );
-    return <Fragment>{ viewTemplate }</Fragment>;
-  }
+  return <>{renderInput}</>;
 }
