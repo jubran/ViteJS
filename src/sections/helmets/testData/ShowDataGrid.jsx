@@ -215,7 +215,7 @@ export default function ShowDataGrid({ rows1 }) {
         }}
       />
       <Dialog
-        disablePortal
+        // disablePortal
         fullWidth
         maxWidth={false}
         open={isPrinted}

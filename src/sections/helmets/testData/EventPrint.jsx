@@ -6,6 +6,7 @@ export default function EventPrint({ rows1, isPrinted, printRef }) {
     <>
       <Box
         style={{ display: isPrinted }}
+        maxHeight={'520px'}
         ref={printRef}
         width={"100%"}
         display="flex"
