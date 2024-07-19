@@ -54,7 +54,7 @@ const EmptyForm = memo(function EmptyForm({ onSubmit, onClose }) {
                     <TextField
                       {...params}
                       name="location"
-                      label="الموقع"
+                      label="2الموقع"
                       inputProps={{
                         style: { fontWeight: "bolder" },
                         ...params.inputProps,
