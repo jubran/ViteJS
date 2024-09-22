@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import EmptyForm from '../forms/emptyForm';
+import { Stack } from '@mui/system';
 
 
 export default function CallApiNew({onClose}) {
@@ -10,9 +11,9 @@ export default function CallApiNew({onClose}) {
   }, []);
 
   return (
-    <div>
+    <Stack>
       <EmptyForm onSubmit={handleSubmit}  onClose={onClose}/>
-    </div>
+    </Stack>
   );
 }
 

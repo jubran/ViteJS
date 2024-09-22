@@ -33,7 +33,7 @@ export default function ViewDate() {
         {" "}
         <CustomBreadcrumbs
           heading="الرئيسية"
-          links={[{ name: "ملخص هذا اليوم" }]}
+          links={[{ name: "اضافة او تحديث او استعراض العمليات التشغيلية" }]}
           action={
             <Button
               component={RouterLink}

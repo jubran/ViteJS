@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogContent } from "@mui/material";
-import { Stack } from "@mui/system";
+import { padding, Stack } from "@mui/system";
 import { useReactToPrint } from "react-to-print";
 import {
   DataGrid,
@@ -179,7 +179,7 @@ export default function ShowDataGrid({ rows1 }) {
             </>
           ),
           noRowsOverlay: () => (
-            <EmptyContent title="لاتوجد أحداث لهذا اليوم حتى هذه اللحضة" />
+            <EmptyContent sx={{padding:"200px"}} title="لاتوجد اي بيانات ليتم عرضها" />
           ),
           noResultsOverlay: () => (
             <EmptyContent title="لم يتم العثور على أحداث" />

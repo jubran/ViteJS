@@ -228,17 +228,17 @@ const UpdatedForm = memo(function UpdatedForm({
       ;
       </DialogContent>
       <DialogActions>
-        <Button variant="outlined" onClick={onClose}>
-          الغاء
+        <Button variant="outlined" onClick={onClose}  color="error" endIcon={<Iconify icon="quill:escape"/>}>
+          الغاء تحديث هذه العملية
         </Button>
 
         <LoadingButton
           type="submit"
           variant="outlined"
-          color="error"
+          color="info"
           endIcon={<Iconify icon="solar:pen-bold" />}
         >
-          تحديث
+          تحديث هذه العملية
         </LoadingButton>
       </DialogActions>
     </form>

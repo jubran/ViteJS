@@ -2,11 +2,12 @@ import Card from "@mui/material/Card";
 
 import ShowDataGrid from "./ShowDataGrid";
 import useSWR from "swr";
+import EmptyContent from "src/components/empty-content";
 export const fetcher = async (...args) =>
   fetch(...args).then((res) => res.json());
 
 export default function DoProcess({ ids }) {
-  // const { data, error } = useSWR(`/api/api.php?dateQuery=${ids}`, fetcher);
+  const { data, error } = useSWR(`/api/api.php?dateQuery=${ids}`, fetcher);
   const rows = [
     {
       id: 1,
@@ -67,12 +68,13 @@ export default function DoProcess({ ids }) {
     },
   ];
 
-  // if (error) {
-  //   return <p> {error.message}</p>;
-  // }
-  // if (!data) {
-  //   return <p>Loodings</p>;
-  // }
+  if (error) {
+    // return <p> {error.message}</p>;
+    return  <EmptyContent title="لاتوجد أي بيانات" />
+  }
+  if (!data) {
+    return  <EmptyContent title="يجري تحميل البيانات من قاعدة البيانات"/>;
+  }
   const renderInput = (
     <Card
       sx={{
@@ -81,7 +83,8 @@ export default function DoProcess({ ids }) {
         flexDirection: { md: "column" },
       }}
     >
-      <ShowDataGrid rows1={rows} />
+      {/* <ShowDataGrid rows1={rows} /> */}
+      <ShowDataGrid rows1={data} />
     </Card>
   );
   return <>{renderInput}</>;

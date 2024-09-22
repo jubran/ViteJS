@@ -36,7 +36,7 @@ const EmptyForm = memo(function EmptyForm({ onSubmit, onClose }) {
     <>
       <form onSubmit={handleSubmit}>
         <DialogContent>
-          <Box display="grid" rowGap={3}>
+          <Box display="grid" rowGap={3} paddingTop={1}>
             <Box
               rowGap={3}
               columnGap={2}
@@ -54,7 +54,7 @@ const EmptyForm = memo(function EmptyForm({ onSubmit, onClose }) {
                     <TextField
                       {...params}
                       name="location"
-                      label="2الموقع"
+                      label="الموقع"
                       inputProps={{
                         style: { fontWeight: "bolder" },
                         ...params.inputProps,
@@ -202,7 +202,7 @@ const EmptyForm = memo(function EmptyForm({ onSubmit, onClose }) {
                 dir="ltr"
                 name="notes"
                 defaultValue={""}
-                label={""}
+                label={"ملاحظة"}
                 inputProps={{
                   style: {
                     color: "red",
@@ -217,18 +217,18 @@ const EmptyForm = memo(function EmptyForm({ onSubmit, onClose }) {
         </DialogContent>
 
         <DialogActions>
-          <Button variant="outlined" onClick={onClose}>
+          <Button variant="outlined" onClick={onClose}  color="error" endIcon={<Iconify icon="quill:escape"/>}>
             الغاء
           </Button>
 
           <LoadingButton
             type="submit"
             variant="outlined"
-            color="error"
-            endIcon={<Iconify icon="solar:pen-bold" />}
+            color="primary"
+            endIcon={<Iconify icon="dashicons:saved" />}
          
           >
-            تحديث
+            تسجيل العملية
           </LoadingButton>
         </DialogActions>
       </form>
