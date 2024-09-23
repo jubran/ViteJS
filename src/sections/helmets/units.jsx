@@ -3,6 +3,7 @@ import Container from "@mui/material/Container";
 import { useSettingsContext } from "src/components/settings";
 
 import { KanbanView } from "../kanban/view";
+import DraggableSequence from "./utils/Drag";
 
 // ----------------------------------------------------------------------
 
@@ -21,7 +22,8 @@ export default function UnitsView() {
           border: (theme) => `dashed 1px ${theme.palette.divider}`,
         }}
       /> */}
-      <KanbanView />
+      {/* <KanbanView /> */}
+      <DraggableSequence />
     </Container>
   );
 }
