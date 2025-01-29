@@ -68,13 +68,13 @@ export default function DoProcess({ ids }) {
     },
   ];
 
-  if (error) {
-    // return <p> {error.message}</p>;
-    return  <EmptyContent title="لاتوجد أي بيانات" />
-  }
-  if (!data) {
-    return  <EmptyContent title="يجري تحميل البيانات من قاعدة البيانات"/>;
-  }
+  // if (error) {
+  //   // return <p> {error.message}</p>;
+  //   return  <EmptyContent title="لاتوجد أي بيانات" />
+  // }
+  // if (!data) {
+  //   return  <EmptyContent title="يجري تحميل البيانات من قاعدة البيانات"/>;
+  // }
   const renderInput = (
     <Card
       sx={{

@@ -27,6 +27,13 @@ import {
   _productNames,
   _descriptions,
   _phoneNumbers,
+  _ftsNames,
+  _ftsTypes,
+  _operationTypes,
+  _tankName,
+  _fuelType,
+  _tankStatus,
+  _tankNumber
 } from "./assets";
 
 // ----------------------------------------------------------------------
@@ -53,6 +60,13 @@ export const _mock = {
   lastName: (index) => _lastNames[index],
   fullName: (index) => _fullNames[index],
   companyName: (index) => _companyNames[index],
+  ftsNames : (index) => _ftsNames[index],
+  ftsTypes: (index) => _ftsTypes[index],
+  operationType: (index) => _operationTypes[index],
+  tankName: (index) => _tankName[index],
+  fuelType: (index) => _fuelType[index],
+  tankStatus: (index) => _tankStatus[index],
+  tankNumber: (index) => _tankNumber[index],
   // Number
   number: {
     percent: (index) => _percents[index],

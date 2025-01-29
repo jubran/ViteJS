@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useMemo, useEffect, useReducer, useCallback } from "react";
 
 import axios, { endpoints } from "src/utils/axios";
-
+import { $ } from "jquery"
 import { AuthContext } from "./auth-context";
 import { setSession, isValidToken } from "./utils";
 
@@ -98,29 +98,51 @@ export function AuthProvider({ children }) {
   }, [initialize]);
 
   // LOGIN WITH HOST
-  const login = useCallback(async (email, password) => {
-    const data = {
-      email,
-      password,
-    };
+  // const login = useCallback(async (email, password) => {
+  //   const data = {
+  //     email,
+  //     password,
+  //   };
 
-    const response = await axios.post(endpoints.auth.login, data);
+  //   const response = await axios.post(endpoints.auth.login, data);
 
-    const { accessToken, user } = response.data;
+  //   const { accessToken, user } = response.data;
 
-    setSession(accessToken);
+  //   setSession(accessToken);
 
-    dispatch({
-      type: "LOGIN",
-      payload: {
-        user: {
-          ...user,
-          accessToken,
-        },
+  //   dispatch({
+  //     type: "LOGIN",
+  //     payload: {
+  //       user: {
+  //         ...user,
+  //         accessToken,
+  //       },
+  //     },
+  //   });
+  // }, []);
+// login new local
+const login = useCallback(async (email, password) => {
+  const data = {
+    email,
+    password,
+  };
+
+  const response = await axios.post('/api/api.php?action=fetchAuth', data);
+
+  const { accessToken, user } = response.data;
+
+  setSession(accessToken);
+
+  dispatch({
+    type: "LOGIN",
+    payload: {
+      user: {
+        ...user,
+        accessToken,
       },
-    });
-  }, []);
-
+    },
+  });
+}, []);
   // LOGIN WITH SQLITE3
   // const login = useCallback(async (email, password) => {
   //   const data = {
@@ -128,7 +150,7 @@ export function AuthProvider({ children }) {
   //     password,
   //   };
 
-  //   const response = await $.post('/api.php?action=fetchAuth', data);
+  //   const response = await $.post('/api/api.php?action=fetchAuth', data);
 
   //   const { accessToken, user } = response.data;
 

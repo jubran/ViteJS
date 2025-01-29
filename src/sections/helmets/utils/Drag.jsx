@@ -12,11 +12,21 @@ import {
   SortableContext,
   useSortable,
 } from "@dnd-kit/sortable";
-import { Avatar, Flex, Tag, Typography } from "antd";
-import { Paper } from "@mui/material";
+import { Avatar, Flex, Steps, Tag, Typography } from "antd";
+import { Button, Paper } from "@mui/material";
 import EmptyContent from "src/components/empty-content";
 import { alpha, Box, Container, margin } from "@mui/system";
 import { useSettingsContext } from "src/components/settings";
+import useSWR from "swr";
+import {
+  LoadingOutlined,
+  SmileOutlined,
+  SolutionOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+
+export const fetcher = async (...args) =>
+  fetch(...args).then((res) => res.json());
 const commonStyle = {
   cursor: "move",
   transition: "unset", // Prevent element from shaking after drag
@@ -81,55 +91,55 @@ const DraggableSequence = () => {
       bg: "#f56a00",
     },
     {
-        id: 4,
-        text: "GT21",
-        bg: "#108ee9",
-      },
-      {
-        id: 5,
-        text: "GT22",
-        bg: "#108ee9",
-      },
-      {
-        id: 6,
-        text: "GT23",
-        bg: "#f56a00",
-      },
-      {
-        id: 7,
-        text: "GT24",
-        bg: "#f56a00",
-      },
-      {
-        id: 8,
-        text: "GT25",
-        bg: "#f56a00",
-      },
-      {
-        id: 9,
-        text: "GT26",
-        bg: "#f56a00",
-      },
-      {
-        id: 10,
-        text: "GT27",
-        bg: "#108ee9",
-      },
-      {
-        id: 11,
-        text: "GT28",
-        bg: "#108ee9",
-      },
-      {
-        id: 12,
-        text: "GT29",
-        bg: "#108ee9",
-      },
-      {
-        id: 13,
-        text: "GT30",
-        bg: "#f56a00",
-      },
+      id: 4,
+      text: "GT21",
+      bg: "#108ee9",
+    },
+    {
+      id: 5,
+      text: "GT22",
+      bg: "#108ee9",
+    },
+    {
+      id: 6,
+      text: "GT23",
+      bg: "#f56a00",
+    },
+    {
+      id: 7,
+      text: "GT24",
+      bg: "#f56a00",
+    },
+    {
+      id: 8,
+      text: "GT25",
+      bg: "#f56a00",
+    },
+    {
+      id: 9,
+      text: "GT26",
+      bg: "#f56a00",
+    },
+    {
+      id: 10,
+      text: "GT27",
+      bg: "#108ee9",
+    },
+    {
+      id: 11,
+      text: "GT28",
+      bg: "#108ee9",
+    },
+    {
+      id: 12,
+      text: "GT29",
+      bg: "#108ee9",
+    },
+    {
+      id: 13,
+      text: "GT30",
+      bg: "#f56a00",
+    },
   ]);
   const settings = useSettingsContext();
   const sensors = useSensors(useSensor(PointerSensor));
@@ -145,6 +155,9 @@ const DraggableSequence = () => {
         return arrayMove(data, oldIndex, newIndex);
       });
     }
+  };
+  const saveSeq = (props) => {
+    useSWR(`/api/api.php?dateQuery=${props}`, fetcher);
   };
   return (
     <DndContext
@@ -170,6 +183,25 @@ const DraggableSequence = () => {
               style={{ flexDirection: "row-reverse", margin: "20px" }}
               vertical
             >
+              <Steps
+                items={[
+                  {
+                    title: "تحديث الأولوية",
+                    status: "process",
+                    icon: <LoadingOutlined />,
+                  },
+                  {
+                    title: "مراجعة",
+                    status: "wait",
+                    icon: <SolutionOutlined />,
+                  },
+                  {
+                    title: "تم",
+                    status: "wait",
+                    icon: <SmileOutlined />,
+                  },
+                ]}
+              />
               <Avatar.Group shape="square">
                 <Avatar size={50} style={{ backgroundColor: "#f56a00" }}>
                   <Typography.Title
@@ -200,6 +232,13 @@ const DraggableSequence = () => {
                 <DraggableTag tag={item} key={item.id} />
               ))}
             </Flex>
+            <Button
+              variant="outlined"
+              type="button"
+              onClick={saveSeq(items.map((s) => JSON.stringify(s.text)))}
+            >
+              Save
+            </Button>
           </Box>
         </SortableContext>
       </Container>

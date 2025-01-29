@@ -172,6 +172,74 @@ export const _lastNames = [
   "Parisian",
 ];
 
+export const _ftsNames =[
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+]
+export const _ftsTypes = [
+  "ديزل",
+  "زيت خام",
+]
+export const _operationTypes = [
+  "In Service",
+  "Stand By",
+  "Shutdown",
+]
+export const _subOperationTypes = [
+  "MO",
+  "FO",
+  "PO",
+  "OMC"
+]
+export const _fo =[
+  "U1",
+  "S.F"
+]
+export const _tankName =[
+"TANK#6",
+"TANK#7",
+"TANK#8",
+"TANK#9",
+"TANK#10",
+"TANK#11",
+"TANK#12",
+"TANK#13",
+"TANK#14",
+"TANK#15",
+"TANK#16",
+"TANK#17",
+"TANK#18",
+]
+export const _fuelType =[
+  "TREATED DIESEL",
+  "TREATED CRUDE",
+  "UN-TREATED DIESEL",
+  "UN-TREATED CRUDE",
+]
+export const _tankStatus =[
+  "SERVICE",
+  "FILLING",
+  "FEEDING",
+  "RETUERN",
+  "SETLLING",
+  "MAINTENANCE"
+]
+export const _tankNumber = [
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "11",
+  "12",
+  "13",
+  "14",
+
+]
 // ----------------------------------------------------------------------
 
 export const _prices = [
